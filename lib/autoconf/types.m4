@@ -1,7 +1,7 @@
 # This file is part of Autoconf.			-*- Autoconf -*-
 # Type related macros: existence, sizeof, and structure members.
 #
-# Copyright (C) 2000-2002, 2004-2017 Free Software Foundation, Inc.
+# Copyright (C) 2000-2002, 2004-2012 Free Software Foundation, Inc.
 
 # This file is part of Autoconf.  This program is free
 # software; you can redistribute it and/or modify it under the
@@ -21,7 +21,7 @@
 # You should have received a copy of the GNU General Public License
 # and a copy of the Autoconf Configure Script Exception along with
 # this program; see the files COPYINGv3 and COPYING.EXCEPTION
-# respectively.  If not, see <https://www.gnu.org/licenses/>.
+# respectively.  If not, see <http://www.gnu.org/licenses/>.
 
 # Written by David MacKenzie, with help from
 # Franc,ois Pinard, Karl Berry, Richard Pixley, Ian Lance Taylor,
@@ -267,7 +267,7 @@ AC_CACHE_CHECK(type of array argument to getgroups, ac_cv_type_getgroups,
 #define MAX(x, y) ((x) > (y) ? (x) : (y))
 
 int
-main (void)
+main ()
 {
   gid_t gidset[NGID];
   int i, n;
@@ -505,38 +505,36 @@ AC_DEFUN([AC_TYPE_LONG_LONG_INT],
   AC_REQUIRE([AC_TYPE_UNSIGNED_LONG_LONG_INT])
   AC_CACHE_CHECK([for long long int], [ac_cv_type_long_long_int],
      [ac_cv_type_long_long_int=yes
-      case $ac_prog_cc_stdc in
-	no | c89) ;;
-	*)
-	  ac_cv_type_long_long_int=$ac_cv_type_unsigned_long_long_int
-	  if test $ac_cv_type_long_long_int = yes; then
-	    dnl Catch a bug in Tandem NonStop Kernel (OSS) cc -O circa 2004.
-	    dnl If cross compiling, assume the bug is not important, since
-	    dnl nobody cross compiles for this platform as far as we know.
-	    AC_RUN_IFELSE(
-	      [AC_LANG_PROGRAM(
-		 [[@%:@include <limits.h>
-		   @%:@ifndef LLONG_MAX
-		   @%:@ define HALF \
-			    (1LL << (sizeof (long long int) * CHAR_BIT - 2))
-		   @%:@ define LLONG_MAX (HALF - 1 + HALF)
-		   @%:@endif]],
-		 [[long long int n = 1;
-		   int i;
-		   for (i = 0; ; i++)
-		     {
-		       long long int m = n << i;
-		       if (m >> i != n)
-			 return 1;
-		       if (LLONG_MAX / 2 < m)
-			 break;
-		     }
-		   return 0;]])],
-	      [],
-	      [ac_cv_type_long_long_int=no],
-	      [:])
-	  fi;;
-      esac])
+      if test "x${ac_cv_prog_cc_c99-no}" = xno; then
+	ac_cv_type_long_long_int=$ac_cv_type_unsigned_long_long_int
+	if test $ac_cv_type_long_long_int = yes; then
+	  dnl Catch a bug in Tandem NonStop Kernel (OSS) cc -O circa 2004.
+	  dnl If cross compiling, assume the bug is not important, since
+	  dnl nobody cross compiles for this platform as far as we know.
+	  AC_RUN_IFELSE(
+	    [AC_LANG_PROGRAM(
+	       [[@%:@include <limits.h>
+		 @%:@ifndef LLONG_MAX
+		 @%:@ define HALF \
+			  (1LL << (sizeof (long long int) * CHAR_BIT - 2))
+		 @%:@ define LLONG_MAX (HALF - 1 + HALF)
+		 @%:@endif]],
+	       [[long long int n = 1;
+		 int i;
+		 for (i = 0; ; i++)
+		   {
+		     long long int m = n << i;
+		     if (m >> i != n)
+		       return 1;
+		     if (LLONG_MAX / 2 < m)
+		       break;
+		   }
+		 return 0;]])],
+	    [],
+	    [ac_cv_type_long_long_int=no],
+	    [:])
+	fi
+      fi])
   if test $ac_cv_type_long_long_int = yes; then
     AC_DEFINE([HAVE_LONG_LONG_INT], [1],
       [Define to 1 if the system has the type `long long int'.])
@@ -551,14 +549,12 @@ AC_DEFUN([AC_TYPE_UNSIGNED_LONG_LONG_INT],
   AC_CACHE_CHECK([for unsigned long long int],
     [ac_cv_type_unsigned_long_long_int],
     [ac_cv_type_unsigned_long_long_int=yes
-     case $ac_prog_cc_stdc in
-       no | c89) ;;
-       *)
-	 AC_LINK_IFELSE(
-	   [_AC_TYPE_LONG_LONG_SNIPPET],
-	   [],
-	   [ac_cv_type_unsigned_long_long_int=no]);;
-     esac])
+     if test "x${ac_cv_prog_cc_c99-no}" = xno; then
+       AC_LINK_IFELSE(
+	 [_AC_TYPE_LONG_LONG_SNIPPET],
+	 [],
+	 [ac_cv_type_unsigned_long_long_int=no])
+     fi])
   if test $ac_cv_type_unsigned_long_long_int = yes; then
     AC_DEFINE([HAVE_UNSIGNED_LONG_LONG_INT], [1],
       [Define to 1 if the system has the type `unsigned long long int'.])
@@ -812,6 +808,9 @@ m4_define([_AC_CHECK_ALIGNOF],
 _AC_CACHE_CHECK_INT([alignment of $1], [AS_TR_SH([ac_cv_alignof_$3])],
   [(long int) offsetof (ac__type_alignof_, y)],
   [AC_INCLUDES_DEFAULT([$2])
+#ifndef offsetof
+# define offsetof(type, member) ((char *) &((type *) 0)->member - (char *) 0)
+#endif
 typedef struct { char x; $1 y; } ac__type_alignof_;],
   [if test "$AS_TR_SH([ac_cv_type_$3])" = yes; then
      AC_MSG_FAILURE([cannot compute alignment of $1], 77)

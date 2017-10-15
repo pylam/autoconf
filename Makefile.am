@@ -1,6 +1,6 @@
 # Make Autoconf.
 
-# Copyright (C) 1999-2004, 2006-2017 Free Software Foundation, Inc.
+# Copyright (C) 1999-2004, 2006-2012 Free Software Foundation, Inc.
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -13,18 +13,14 @@
 # GNU General Public License for more details.
 
 # You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+# bin/ must be run first, as it builds executables needed for tests.
+# autom4te uses autotest.m4f to generate `testsuite', so build tests last.
+# Rules in man/ use scripts from both bin/ and tests/, so *it* goes last.
+SUBDIRS = bin . lib doc tests man
 
 ACLOCAL_AMFLAGS = -I m4
-
-## All of these will be incrementally updated later, here or in included
-## makefile fragments.
-ETAGS_ARGS =
-MOSTLYCLEANFILES =
-CLEANFILES =
-DISTCLEANFILES =
-MAINTAINERCLEANFILES =
-SUFFIXES =
 
 EXTRA_DIST = ChangeLog.0 ChangeLog.1 ChangeLog.2 ChangeLog.3 \
 	     BUGS COPYINGv3 COPYING.EXCEPTION \
@@ -35,36 +31,15 @@ EXTRA_DIST = ChangeLog.0 ChangeLog.1 ChangeLog.2 ChangeLog.3 \
 	     build-aux/gitlog-to-changelog \
 	     .prev-version .version
 
-edit = sed \
-	-e 's|@SHELL[@]|$(SHELL)|g' \
-	-e 's|@PERL[@]|$(PERL)|g' \
-	-e 's|@PERL_FLOCK[@]|$(PERL_FLOCK)|g' \
-	-e 's|@bindir[@]|$(bindir)|g' \
-	-e 's|@pkgdatadir[@]|$(pkgdatadir)|g' \
-	-e 's|@prefix[@]|$(prefix)|g' \
-	-e 's|@autoconf-name[@]|'`echo autoconf | sed '$(transform)'`'|g' \
-	-e 's|@autoheader-name[@]|'`echo autoheader | sed '$(transform)'`'|g' \
-	-e 's|@autom4te-name[@]|'`echo autom4te | sed '$(transform)'`'|g' \
-	-e 's|@M4[@]|$(M4)|g' \
-	-e 's|@M4_DEBUGFILE[@]|$(M4_DEBUGFILE)|g' \
-	-e 's|@M4_GNU[@]|$(M4_GNU)|g' \
-	-e 's|@AWK[@]|$(AWK)|g' \
-	-e 's|@RELEASE_YEAR[@]|$(RELEASE_YEAR)|g' \
-	-e 's|@VERSION[@]|$(VERSION)|g' \
-	-e 's|@PACKAGE_NAME[@]|$(PACKAGE_NAME)|g' \
-	-e 's|@configure_input[@]|Generated from $@.in; do not edit by hand.|g'
-
-include $(srcdir)/lib/freeze.mk
-
 ## --------- ##
 ## INSTALL.  ##
 ## --------- ##
 
-custom_MAKEINFOFLAGS = --no-headers --no-validate --no-split
+AM_MAKEINFOFLAGS = --no-headers --no-validate --no-split
 
 if MAKE_CASE_SENSITIVE
 pkgdata_DATA = $(srcdir)/INSTALL
-MAINTAINERCLEANFILES += $(srcdir)/INSTALL
+MAINTAINERCLEANFILES = $(srcdir)/INSTALL
 
 # Don't leave blank line at end of file.
 OMIT_TRAILING_EMPTY_LINES = '/^$$/H; /^$$/d; x; s/\n//p; s/\n*//; x'
@@ -74,7 +49,7 @@ CONVERT_QUOTES = "s/\`\([^']*\)'/'\1'/g"
 $(srcdir)/INSTALL: $(top_srcdir)/doc/install.texi
 	echo @firstparagraphindent insert				\
 	  | cat - $(top_srcdir)/doc/install.texi > tmp.texi
-	$(MAKEINFO) $(custom_MAKEINFOFLAGS) $(MAKEINFOFLAGS)		\
+	$(MAKEINFO) $(AM_MAKEINFOFLAGS) $(MAKEINFOFLAGS)		\
 	     --plaintext tmp.texi					\
 	  | sed -e $(CONVERT_QUOTES) -e $(OMIT_TRAILING_EMPTY_LINES)	\
 	     > $@-t && mv $@-t $@
@@ -127,26 +102,20 @@ dist-hook: gen-ChangeLog
 distclean-local:
 	if test x"$(VPATH)" != x ; then rm -f GNUmakefile ; fi
 
-include $(srcdir)/bin/local.mk
-include $(srcdir)/doc/local.mk
-include $(srcdir)/lib/local.mk
-include $(srcdir)/man/local.mk
-include $(srcdir)/tests/local.mk
-
 # Perl coverage statistics.
 PERL_COVERAGE_DB = `pwd`/cover_db
 PERL_COVERAGE_FLAGS = -MDevel::Cover=-db,$(PERL_COVERAGE_DB),-silent,on,-summary,off
 PERL_COVER = cover
 
 check-coverage-run: all
-	$(MKDIR_P) $(PERL_COVERAGE_DB)
+	$(mkinstalldirs) $(PERL_COVERAGE_DB)
 	PERL5OPT="$(PERL_COVERAGE_FLAGS)"; export PERL5OPT; \
 	$(MAKE) $(AM_MAKEFLAGS) check
 
 check-coverage-report:
 	@if test ! -d $(PERL_COVERAGE_DB); then \
-	  echo "No coverage database found in '$(PERL_COVERAGE_DB)'." >&2; \
-	  echo "Please run 'make check-coverage' first" >&2; \
+	  echo "No coverage database found in \`$(PERL_COVERAGE_DB)'." >&2; \
+	  echo "Please run \`make check-coverage' first" >&2; \
 	  exit 1; \
 	fi
 	$(PERL_COVER) $(PERL_COVERAGE_DB) $(PERL_COVER_FLAGS)

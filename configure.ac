@@ -1,7 +1,7 @@
 #                                                       -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-# Copyright (C) 1992-1995, 1999-2017 Free Software Foundation, Inc.
+# Copyright (C) 1992-1995, 1999-2012 Free Software Foundation, Inc.
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -14,9 +14,10 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-AC_PREREQ([2.62])
+# We need AC_CONFIG_TESTDIR, AC_PROG_SED, AC_PROG_GREP.
+AC_PREREQ([2.60])
 
 AC_INIT([GNU Autoconf],
 	m4_esyscmd([build-aux/git-version-gen .tarball-version]),
@@ -27,16 +28,11 @@ AC_CONFIG_AUX_DIR([build-aux])
 
 AM_INIT_AUTOMAKE([1.11 dist-xz readme-alpha no-texinfo.tex std-options])
 
-# Keep this on a line of its own, since it must be found and processed
-# by the 'update-release-year' rule in our Makefile.
-RELEASE_YEAR=2017
-AC_SUBST([RELEASE_YEAR])
-
 AB_INIT
 
-# We use '/bin/sh -n script' to check that there are no syntax errors
+# We use `/bin/sh -n script' to check that there are no syntax errors
 # in the scripts.  Although incredible, there are /bin/sh that go into
-# endless loops with '-n', e.g., SunOS's:
+# endless loops with `-n', e.g., SunOS's:
 #
 #   $ uname -a
 #   SunOS ondine 4.1.3 2 sun4m unknown
@@ -54,16 +50,16 @@ AB_INIT
 # Also, some implementations of /bin/sh (e.g., Solaris 8) are soooo slow
 # that they are unusable on large scripts like our testsuite.
 
-# So before using '/bin/sh -n' to check our scripts, we first check
-# that '/bin/sh -n' is known to not have these problems.
+# So before using `/bin/sh -n' to check our scripts, we first check
+# that `/bin/sh -n' is known to not have these problems.
 
 AC_CACHE_CHECK([whether /bin/sh -n is known to work], [ac_cv_sh_n_works],
 [if (
     unset BASH_VERSION ZSH_VERSION
     /bin/sh -c '
-      test ${BASH_VERSION+y} || # Bash
-      test ${KSH_VERSION+y} || # pdksh
-      test ${ZSH_VERSION+y} || # zsh
+      test -n "${BASH_VERSION+set}" || # Bash
+      test -n "${KSH_VERSION+set}" || # pdksh
+      test -n "${ZSH_VERSION+set}" || # zsh
       test -n "${.sh.version}" # ksh93; put this last since its syntax is dodgy
     '
   ) 2>/dev/null
@@ -106,7 +102,7 @@ AC_SUBST([ac_cv_dir_trailing_space])
 
 # Initialize the test suite.
 AC_CONFIG_TESTDIR([tests])
-AC_CONFIG_FILES([tests/atlocal])
+AC_CONFIG_FILES([tests/Makefile tests/atlocal])
 AC_PATH_PROG([EXPR], [expr])
 
 
@@ -124,6 +120,7 @@ AC_PROG_GNU_M4
 ## Man pages.  ##
 ## ----------- ##
 
+AC_CONFIG_FILES([man/Makefile])
 AM_MISSING_PROG([HELP2MAN], [help2man])
 
 
@@ -162,6 +159,7 @@ AC_SUBST([PERL_FLOCK], [$ac_cv_perl_flock_implemented])
 ## Emacs.  ##
 ## ------- ##
 
+AC_CONFIG_FILES([lib/emacs/Makefile])
 TEST_EMACS=$EMACS
 test x"$TEST_EMACS" = xt && TEST_EMACS=
 AC_CHECK_PROGS([TEST_EMACS], [emacs xemacs], [no])
@@ -207,10 +205,25 @@ AC_PROG_MAKE_CASE_SENSITIVE
 ## Conclusion.  ##
 ## ------------ ##
 
-dnl Allow maintainer rules under GNU make even in VPATH builds.
-AC_CONFIG_LINKS([GNUmakefile:GNUmakefile])
+dnl Allow maintainer rules under GNU make even in VPATH builds.  This does
+dnl not work in autoconf 2.61 or earlier, but we don't want to require
+dnl unreleased autoconf during bootstrap, hence the version test.
+dnl TODO remove the version check once we depend on autoconf 2.62.
+dnl Meanwhile, we must use a shell variable so that we bypass automake's
+dnl attempts to remove the sole copy of GNUmakefile in a non-VPATH build
+dnl during 'make distclean'.
+dnl TODO avoid the shell variable once automake is fixed.
+GNUmakefile=GNUmakefile
+m4_if(m4_version_compare([2.61a.100],
+	m4_defn([m4_PACKAGE_VERSION])), [1], [],
+      [AC_CONFIG_LINKS([$GNUmakefile:$GNUmakefile], [],
+	[GNUmakefile=$GNUmakefile])])
 
-AC_CONFIG_FILES([Makefile])
+AC_CONFIG_FILES([Makefile doc/Makefile
+		 lib/Makefile lib/Autom4te/Makefile lib/autoscan/Makefile
+		 lib/m4sugar/Makefile
+		 lib/autoconf/Makefile lib/autotest/Makefile
+		 bin/Makefile])
 
 AC_OUTPUT
 # Report the state of this version of Autoconf if this is a beta.

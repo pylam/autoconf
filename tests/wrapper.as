@@ -1,7 +1,7 @@
 AS_INIT[]dnl                                            -*- shell-script -*-
 # wrapper.as -- running `@wrap_program@' as if it were installed.
 # @configure_input@
-# Copyright (C) 2003-2004, 2007, 2009-2017 Free Software Foundation,
+# Copyright (C) 2003-2004, 2007, 2009-2012 Free Software Foundation,
 # Inc.
 
 # This program is free software: you can redistribute it and/or modify
@@ -15,7 +15,7 @@ AS_INIT[]dnl                                            -*- shell-script -*-
 # GNU General Public License for more details.
 
 # You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 testdir='@abs_top_builddir@/tests'
 PATH=$testdir$PATH_SEPARATOR$PATH

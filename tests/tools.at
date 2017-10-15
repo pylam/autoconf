@@ -2,7 +2,7 @@
 
 AT_BANNER([Executables (autoheader, autoupdate...).])
 
-# Copyright (C) 2000-2001, 2003-2004, 2006-2017 Free Software
+# Copyright (C) 2000-2001, 2003-2004, 2006-2012 Free Software
 # Foundation, Inc.
 #
 # This program is free software: you can redistribute it and/or modify
@@ -16,7 +16,7 @@ AT_BANNER([Executables (autoheader, autoupdate...).])
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 ## ----------------------------- ##
@@ -123,7 +123,7 @@ AT_DATA([file.m4],
 ]])
 AT_CHECK_AUTOM4TE([-o file file.m4])
 
-# Create a file whose timestamp is in the future.
+# Create a file whose time stamp is in the future.
 # (next year)-01-01 00:01 UTC should always be in the future,
 # even on slow machines.
 echo BAD >file
@@ -357,77 +357,6 @@ AT_CHECK_AUTOCONF([[-t define:'$1' -i| sed -n '$p']],
 
 AT_CLEANUP
 
-
-# autoconf --trace: AC_CONFIG_MACRO_DIRS
-# --------------------------------------
-AT_SETUP([autoconf --trace: AC_CONFIG_MACRO_DIRS])
-AT_KEYWORDS([AC_CONFIG_MACRO_DIR AC_CONFIG_MACRO_DIR_TRACE])
-
-AT_DATA([configure.ac],
-[[AC_INIT
-AC_CONFIG_MACRO_DIR([dir1])
-AC_CONFIG_MACRO_DIRS([dir2 dir3 \
-dir4])
-AC_CONFIG_MACRO_DIRS([dir5])
-]])
-
-# Legacy tracing
-AT_CHECK_AUTOCONF([-t AC_CONFIG_MACRO_DIR], 0,
-[[configure.ac:2:AC_CONFIG_MACRO_DIR:dir1
-]])
-
-# Preferred tracing
-AT_CHECK_AUTOCONF([-t AC_CONFIG_MACRO_DIR_TRACE], 0,
-[[configure.ac:2:AC_CONFIG_MACRO_DIR_TRACE:dir1
-configure.ac:3:AC_CONFIG_MACRO_DIR_TRACE:dir2
-configure.ac:3:AC_CONFIG_MACRO_DIR_TRACE:dir3
-configure.ac:3:AC_CONFIG_MACRO_DIR_TRACE:dir4
-configure.ac:5:AC_CONFIG_MACRO_DIR_TRACE:dir5
-]])
-
-# Legacy macro can only be used once
-AT_DATA([configure.ac],
-[[AC_INIT
-AC_CONFIG_MACRO_DIR([dir1])
-AC_CONFIG_MACRO_DIR([dir2])
-]])
-AT_CHECK_AUTOCONF([], [1], [], [stderr])
-AT_CHECK([grep 'error: AC_CONFIG_MACRO_DIR can only be used once' stderr],
-[], [ignore])
-
-# Legacy macro must be used first, if present
-AT_DATA([configure.ac],
-[[AC_INIT
-AC_CONFIG_MACRO_DIRS([dir1])
-AC_CONFIG_MACRO_DIR([dir2])
-]])
-AT_CHECK_AUTOCONF([], [1], [], [stderr])
-AT_CHECK([grep 'error: AC_CONFIG_MACRO_DIR can only be used once' stderr],
-[], [ignore])
-
-# Only use the public macros
-AT_DATA([configure.ac],
-[[AC_INIT
-AC_CONFIG_MACRO_DIR_TRACE([dir1])
-]])
-AT_CHECK_AUTOCONF([], [1], [],
-[[configure.ac:2: error: Do not invoke AC_CONFIG_MACRO_DIR_TRACE directly
-configure.ac:2: the top level
-autom4te: m4 failed with exit status: 1
-]])
-
-# Legacy macro use is not required, but still gets traced
-AT_DATA([configure.ac],
-[[AC_INIT
-AC_CONFIG_MACRO_DIRS([dir1])
-AC_CONFIG_MACRO_DIRS([dir2])
-]])
-AT_CHECK_AUTOCONF([], [0], [], [])
-AT_CHECK_AUTOCONF([-t AC_CONFIG_MACRO_DIR], [0],
-[[configure.ac:2:AC_CONFIG_MACRO_DIR:dir1
-]])
-
-AT_CLEANUP
 
 
 ## ---------------------------- ##
@@ -741,7 +670,7 @@ AC_CONFIG_HEADERS(config.h:config.hin)
 AC_DEFINE(that, "whatever you want.")
 ]])
 
-# The test suite goes too fast for the cache timestamps...
+# The test suite goes too fast for the cache time stamps...
 # Pass --force.
 AT_CHECK_AUTOHEADER([--force], [1], [], [ignore])
 
@@ -825,7 +754,7 @@ AT_CLEANUP
 
 
 # autoheader should see through m4 macros, just like autoconf
-# https://lists.gnu.org/archive/html/bug-autoconf/2009-06/msg00000.html
+# http://lists.gnu.org/archive/html/bug-autoconf/2009-06/msg00000.html
 AT_SETUP([autoheader and macros])
 
 AT_DATA([configure.ac],
@@ -859,31 +788,6 @@ config.h.in:0
 
 AT_CLEANUP
 
-
-# autoheader should take all config header inputs into account when
-# checking for missing templates.
-AT_SETUP([autoheader with multiple headers])
-
-AT_DATA([config-extra.h.in],
-[[/* Define this to whatever you want. */
-#undef HANNA
-]])
-AT_DATA([configure.ac],
-[[AC_INIT
-AC_CONFIG_HEADERS([config.h config-extra.h])
-AC_DEFINE([HANNA], ["Hanna"])
-AC_DEFINE([SEAN], ["Sean"], [Sean's name])
-AC_OUTPUT
-]])
-
-AT_CHECK_AUTOCONF
-AT_CHECK_AUTOHEADER
-AT_CHECK([grep HANNA configure], [0], [ignore], [ignore])
-AT_CHECK([grep HANNA config.h.in], [1], [ignore], [ignore])
-AT_CHECK([grep SEAN configure], [0], [ignore], [ignore])
-AT_CHECK([grep SEAN config.h.in], [0], [ignore], [ignore])
-
-AT_CLEANUP
 
 
 
@@ -980,7 +884,7 @@ AC_DEFUN([FOO], [$#])
 AU_ALIAS([BAZ],[FOO])
 test "FOO:FOO():FOO(x) BAZ:BAZ():BAZ(x)" = "0:1:1 0:1:1" || exit 1
 AC_PROG_CC
-AC_WORDS_BIGENDIAN
+AC_STDC_HEADERS
 AC_OUTPUT
 ]])
 
@@ -988,8 +892,8 @@ AC_OUTPUT
 AT_CHECK_AUTOUPDATE
 AT_CHECK_AUTOCONF
 AT_CHECK_CONFIGURE
-AT_CHECK([grep 'AC_C_BIGENDIAN[(]' configure.ac], 1, [ignore], [ignore])
-AT_CHECK([grep 'AC_C_BIGENDIAN' configure.ac], 0, [ignore], [ignore])
+AT_CHECK([grep 'AC_HEADER_STDC[(]' configure.ac], 1, [ignore], [ignore])
+AT_CHECK([grep 'AC_HEADER_STDC' configure.ac], 0, [ignore], [ignore])
 
 AT_CLEANUP
 
@@ -1231,7 +1135,7 @@ AT_SETUP([autoupdating with aclocal and m4@&t@_include])
 AT_CHECK([aclocal --version || exit 77], [], [ignore], [ignore])
 
 mkdir m4 aclocal
-AT_DATA([configure.ac],
+AT_DATA([configure.in],
 [[AC_INIT(x,0)
 AC_UNCHANGED_MACRO
 AC_OLD_MACRO
@@ -1256,7 +1160,7 @@ AT_CLEANUP
 # -----------------------------
 
 AT_SETUP([autom4te preselections])
-: ${sleep='sleep 1'}	# Command to force different timestamps.
+: ${sleep='sleep 1'}	# Command to force different time stamps.
 # If this test should run on FAT file systems and older w32,
 # then setting $sleep correctly needs to be revisited.
 
@@ -1265,7 +1169,7 @@ AT_CHECK([automake --version || exit 77], [], [stdout], [ignore])
 AT_CHECK([[grep '[1-9]\.[0-9]' stdout || exit 77]], [], [ignore])
 AT_CHECK([test ! -f $HOME/.autom4te.cfg || exit 77], [], [ignore], [ignore])
 
-AT_DATA([configure.ac],
+AT_DATA([configure.in],
 [[AC_INIT(GNU foo, 1.0)
 AM_INIT_AUTOMAKE
 AC_CONFIG_FILES([Makefile])
@@ -1286,7 +1190,7 @@ AT_CHECK([autoconf])
 
 # If this test fails due to missing entries in lib/autom4te.in, then
 # comparing the old and new requests is a good place to start debugging:
-sort autom4te.cache/requests >old-requests
+cp autom4te.cache/requests old-requests
 echo newer >newer
 $sleep # if `configure' is regenerated, we want it to be strictly newer,
        # to catch the error consistently.
@@ -1294,7 +1198,7 @@ AT_CHECK([aclocal], [], [], [ignore])
 AT_CHECK([automake --no-force --add-missing], [], [], [ignore])
 AT_CHECK([autoconf])
 AT_CHECK([test "`find configure -newer newer`" = "" ||
-	  { sort autom4te.cache/requests | diff old-requests -; exit 1; }],
+	  { diff old-requests autom4te.cache/requests; exit 1; }],
 	 [], [], [],
 	 [extract_version=['s/^[^0-9]*\([0-9][^ ]*\).*/\1/;q']
 	  automake_version=`automake --version | sed "$extract_version"`
@@ -1390,9 +1294,9 @@ do
   export TMPDIR
 
   # skip if we cannot create such a file or directory
-  AT_CHECK([mkdir "$dir" "$TMPDIR" && touch "$file.ac" || exit 77])
+  AT_CHECK([mkdir "$dir" "$TMPDIR" && touch "$file.in" || exit 77])
 
-  cat >"$file.ac" <<'END'
+  cat >"$file.in" <<'END'
 [AC_INIT(x,0)
 m4@&t@_include([foo.m4])
 AC_CONFIG_HEADERS([config.h:config.hin])
@@ -1403,20 +1307,20 @@ END
 [AC_DEFUN([AC_MACRO], [echo hi])]
 END
 
-  AT_CHECK_AUTOHEADER([-B "$dir" "$file.ac"])
-  AT_CHECK_AUTOHEADER([--force -I "$dir" "$file.ac"])
-  AT_CHECK_AUTOUPDATE([-B "$dir" "$file.ac"])
-  AT_CHECK_AUTOUPDATE([--force -I "$dir" "$file.ac"])
-  AT_CHECK_AUTOUPDATE([-B "$dir" - < "$file.ac"], [], [ignore])
-  AT_CHECK_AUTOCONF([-B "$dir" -o "$file" "$file.ac"])
-  AT_CHECK_AUTOCONF([-I "$dir" -o "$file" "$file.ac"])
+  AT_CHECK_AUTOHEADER([-B "$dir" "$file.in"])
+  AT_CHECK_AUTOHEADER([--force -I "$dir" "$file.in"])
+  AT_CHECK_AUTOUPDATE([-B "$dir" "$file.in"])
+  AT_CHECK_AUTOUPDATE([--force -I "$dir" "$file.in"])
+  AT_CHECK_AUTOUPDATE([-B "$dir" - < "$file.in"], [], [ignore])
+  AT_CHECK_AUTOCONF([-B "$dir" -o "$file" "$file.in"])
+  AT_CHECK_AUTOCONF([-I "$dir" -o "$file" "$file.in"])
   # In autoconf, these exercise a slightly different code path:
-  AT_CHECK_AUTOCONF([--prepend-include="$dir" -o "$file" "$file.ac"])
-  AT_CHECK_AUTOCONF([--include="$dir" -o "$file" "$file.ac"])
+  AT_CHECK_AUTOCONF([--prepend-include="$dir" -o "$file" "$file.in"])
+  AT_CHECK_AUTOCONF([--include="$dir" -o "$file" "$file.in"])
   AT_CHECK([autoscan -B "$dir"], [], [], [ignore])
   AT_CHECK([autoscan --force -I "$dir"], [], [], [ignore])
   # autoreconf requires a sane input file name.  Also, disable aclocal.
-  mv -f "$file.ac" configure.ac
+  mv -f "$file.in" configure.in
   AT_DATA([aclocal.m4])
   AT_CHECK([autoreconf -B "$dir"])
   AT_CHECK([autoreconf --force -I "$dir"])

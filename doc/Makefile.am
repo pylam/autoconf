@@ -1,6 +1,6 @@
 # Make Autoconf documentation.
 
-# Copyright (C) 2000-2003, 2007-2017 Free Software Foundation, Inc.
+# Copyright (C) 2000-2003, 2007-2012 Free Software Foundation, Inc.
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -13,31 +13,21 @@
 # GNU General Public License for more details.
 
 # You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 AM_MAKEINFOFLAGS = --no-split
 TEXI2HTML_FLAGS = -split_chapter
-TEXINFO_TEX = build-aux/texinfo.tex
+TEXINFO_TEX = ../build-aux/texinfo.tex
 
-info_TEXINFOS = doc/autoconf.texi doc/standards.texi
-doc_autoconf_TEXINFOS = doc/fdl.texi doc/install.texi
-doc_standards_TEXINFOS = doc/fdl.texi doc/gnu-oids.texi doc/make-stds.texi
+info_TEXINFOS = autoconf.texi standards.texi
+autoconf_TEXINFOS = fdl.texi install.texi
+standards_TEXINFOS = fdl.texi gnu-oids.texi make-stds.texi
 
-EXTRA_DIST += doc/gendocs_template
+EXTRA_DIST = gendocs_template
 
 # Files from texi2dvi that should be removed, but which Automake does
 # not know.
-CLEANFILES += \
-  autoconf.ACs \
-  autoconf.cvs \
-  autoconf.MSs \
-  autoconf.prs \
-  autoconf.ATs \
-  autoconf.evs \
-  autoconf.fns \
-  autoconf.ovs \
-  autoconf.ca  \
-  autoconf.CA  \
-  autoconf.cas \
-  autoconf.CAs \
-  autoconf.tmp
+CLEANFILES = autoconf.ACs  autoconf.cvs  autoconf.MSs  autoconf.prs \
+	     autoconf.ATs  autoconf.evs  autoconf.fns  autoconf.ovs \
+	     autoconf.ca   autoconf.CA   autoconf.cas  autoconf.CAs \
+	     autoconf.tmp

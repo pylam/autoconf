@@ -11,7 +11,7 @@ Aaron Crane                 aaronc@pobox.com
 Aaron M. Ucko               amu@alum.mit.edu
 Aaron W. LaFramboise        aaronenvelope277@aaronwl.com
 Adam J. Richter             adam@yggdrasil.com
-Adrian Bunk                 bunk@stusta.de
+Adrian Bunk                 bunk-gnu@fs.tum.de
 Aharon Robbins              arnold@gnu.org
 Akim Demaille               akim@freefriends.org
 Akinori Musha               knu@iDaemons.org
@@ -29,12 +29,11 @@ Alfred G. de Wijn           dwijn@iluvatar.eu.org
 Alfred M. Szmidt            ams@gnu.org
 Allan Caffee                allan.caffee@gmail.com
 Allan Clark                 allanc@chickenandporn.com
-Anaïs Bouque                anais.bouque@fr.thalesgroup.com
 Anders Kaseorg              andersk@MIT.EDU
 Andreas Buening             andreas.buening@nexgo.de
 Andreas Jaeger              aj@suse.de
 Andreas Schott              schott@rzg.mpg.de
-Andreas Schwab              schwab@linux-m68k.org
+Andreas Schwab              schwab@issan.informatik.uni-dortmund.de
 Andreas Waechter            andreasw@watson.ibm.com
 Andrej Borsenkow            borsenkow.msk@sni.de
 Andrew Belov                ?
@@ -105,7 +104,6 @@ David Byron                 dbyron@hheld.com
 David Carter                david@carter.net
 David Cournapeau            david@ar.media.kyoto-u.ac.jp
 David Fang                  fang@csl.cornell.edu
-David Hill                  dhill@mindcry.org
 David J. MacKenzie          djm@uunet.uu.net
 David M. Lloyd              dmlloyd@tds.net
 David Morgan                dmorgan@symark.com
@@ -211,7 +209,6 @@ John Interrante             interran@uluru.stanford.edu
 John R. Cary                cary@txcorp.com
 John W. Eaton               jwe@bevo.che.wisc.edu
 Jonathan Kamens             jik@kamens.brookline.ma.us
-Jonathan Lebon              jlebon@redhat.com
 Josef Tran                  josef@timetrackertechnology.com
 Josef Vukovic               josefvukovic@googlemail.com
 Joseph S. Myers             jsm28@cam.ac.uk
@@ -304,13 +301,12 @@ Nathanael Nerode            neroden@gcc.gnu.org
 Nelson H. F. Beebe          beebe@math.utah.edu
 Nicolas Joly                njoly@pasteur.fr
 Nicolás Lichtmaier          jnl@synapsis-sa.com.ar
-Nick Bowler                 nbowler@draconx.ca
+Nick Bowler                 nbowler@elliptictech.com
 NightStrike                 nightstrike@gmail.com
 Nishio Futoshi              fut_nis@d3.dion.ne.jp
 Noah Elliott                elliott@hera.llnl.gov
 Noah Friedman               friedman@gnu.ai.mit.edu
 Noah Misch                  noah@cs.caltech.edu
-Noel Grandin                noel@peralex.com
 Norman Gray                 ?
 Olaf Lenz                   olenz@fias.uni-frankfurt.de
 Ole Holm Nielsen            Ole.H.Nielsen@fysik.dtu.dk
@@ -319,7 +315,6 @@ Olly Betts                  olly@survex.com
 Ossama Othman               ossama@debian.org
 Pallav Gupta                pallavgupta@gmail.com
 Paolo Bonzini               bonzini@gnu.org
-Patrice Dumas               pertusus@free.fr
 Patrick Tullmann            tullmann@cs.utah.edu
 Patrick Welche              prlw1@newn.cam.ac.uk
 Paul Berrevoets             paul@swi.com
@@ -453,7 +448,7 @@ mode: text
 coding: utf-8
 End:
 
-Copyright (C) 1999-2017 Free Software Foundation, Inc.
+Copyright (C) 1999-2012 Free Software Foundation, Inc.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -466,4 +461,4 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
+along with this program.  If not, see <http://www.gnu.org/licenses/>.

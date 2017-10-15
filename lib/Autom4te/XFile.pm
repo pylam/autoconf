@@ -1,4 +1,4 @@
-# Copyright (C) 2001-2017 Free Software Foundation, Inc.
+# Copyright (C) 2001-2012 Free Software Foundation, Inc.
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -11,7 +11,7 @@
 # GNU General Public License for more details.
 
 # You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Written by Akim Demaille <akim@freefriends.org>.
 
@@ -31,13 +31,13 @@ Autom4te::XFile - supply object methods for filehandles with error handling
     use Autom4te::XFile;
 
     $fh = new Autom4te::XFile;
-    $fh->open ("file", "<");
+    $fh->open ("< file");
     # No need to check $FH: we died if open failed.
     print <$fh>;
     $fh->close;
     # No need to check the return value of close: we died if it failed.
 
-    $fh = new Autom4te::XFile "file", ">";
+    $fh = new Autom4te::XFile "> file";
     # No need to check $FH: we died if new failed.
     print $fh "bar\n";
     $fh->close;
@@ -130,7 +130,7 @@ Die if opening fails.  Store the name of the file.  Use binmode for writing.
 sub open
 {
   my $fh = shift;
-  my ($file, $mode) = @_;
+  my ($file) = @_;
 
   # WARNING: Gross hack: $FH is a typeglob: use its hash slot to store
   # the 'name' of the file we are opening.  See the example with
@@ -147,12 +147,7 @@ sub open
   # (This circumvents a bug in at least Cygwin bash where the shell
   # parsing fails on lines ending with the continuation character '\'
   # and CRLF).
-  # Correctly recognize usages like:
-  #  - open ($file, "w")
-  #  - open ($file, "+<")
-  #  - open (" >$file")
-  binmode $fh
-    if (defined $mode && $mode =~ /^[+>wa]/ or $file =~ /^\s*>/);
+  binmode $fh if $file =~ /^\s*>/;
 }
 
 =item C<$fh-E<gt>close>
@@ -305,3 +300,20 @@ Derived from IO::File.pm by Akim Demaille E<lt>F<akim@freefriends.org>E<gt>.
 =cut
 
 1;
+
+### Setup "GNU" style for perl-mode and cperl-mode.
+## Local Variables:
+## perl-indent-level: 2
+## perl-continued-statement-offset: 2
+## perl-continued-brace-offset: 0
+## perl-brace-offset: 0
+## perl-brace-imaginary-offset: 0
+## perl-label-offset: -2
+## cperl-indent-level: 2
+## cperl-brace-offset: 0
+## cperl-continued-brace-offset: 0
+## cperl-label-offset: -2
+## cperl-extra-newline-before-brace: t
+## cperl-merge-trailing-else: nil
+## cperl-continued-statement-offset: 2
+## End:

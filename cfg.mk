@@ -1,5 +1,5 @@
 # Customize maint.mk for Autoconf.            -*- Makefile -*-
-# Copyright (C) 2003-2004, 2006, 2008-2017 Free Software Foundation,
+# Copyright (C) 2003-2004, 2006, 2008-2012 Free Software Foundation,
 # Inc.
 
 # This program is free software: you can redistribute it and/or modify
@@ -13,7 +13,7 @@
 # GNU General Public License for more details.
 
 # You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # This file is '-include'd into GNUmakefile.
 
@@ -54,12 +54,14 @@ gnulib-update:
 	cp $(gnulib_dir)/build-aux/announce-gen $(srcdir)/build-aux
 	cp $(gnulib_dir)/build-aux/config.guess $(srcdir)/build-aux
 	cp $(gnulib_dir)/build-aux/config.sub $(srcdir)/build-aux
+	cp $(gnulib_dir)/build-aux/elisp-comp $(srcdir)/build-aux
 	cp $(gnulib_dir)/build-aux/gendocs.sh $(srcdir)/build-aux
 	cp $(gnulib_dir)/build-aux/git-version-gen $(srcdir)/build-aux
 	cp $(gnulib_dir)/build-aux/gitlog-to-changelog $(srcdir)/build-aux
 	cp $(gnulib_dir)/build-aux/gnupload $(srcdir)/build-aux
 	cp $(gnulib_dir)/build-aux/install-sh $(srcdir)/build-aux
 	cp $(gnulib_dir)/build-aux/mdate-sh $(srcdir)/build-aux
+	cp $(gnulib_dir)/build-aux/missing $(srcdir)/build-aux
 	cp $(gnulib_dir)/build-aux/move-if-change $(srcdir)/build-aux
 	cp $(gnulib_dir)/build-aux/texinfo.tex $(srcdir)/build-aux
 	cp $(gnulib_dir)/build-aux/update-copyright $(srcdir)/build-aux
@@ -79,8 +81,9 @@ WGETFLAGS = -C off
 
 ## Fetch the latest versions of files we care about.
 automake_gitweb = \
-  https://git.savannah.gnu.org/gitweb/?p=automake.git;a=blob_plain;hb=HEAD;
+  http://git.savannah.gnu.org/gitweb/?p=automake.git;a=blob_plain;hb=HEAD;
 autom4te_files = \
+  Autom4te/Configure_ac.pm \
   Autom4te/Channels.pm \
   Autom4te/FileUtils.pm \
   Autom4te/Getopt.pm \
@@ -123,20 +126,8 @@ update-copyright-env = \
   UPDATE_COPYRIGHT_USE_INTERVALS=1 \
   UPDATE_COPYRIGHT_MAX_LINE_LENGTH=72
 
-update-copyright: update-release-year
-update-release-year:
-	$(AM_V_GEN):; \
-	if test -n "$$UPDATE_COPYRIGHT_YEAR"; then \
-	   current_year=$$UPDATE_COPYRIGHT_YEAR; \
-	else \
-	  current_year=`date +%Y` && test -n "$$current_year" \
-	    || { echo "$@: cannot get current year" >&2; exit 1; }; \
-	fi; \
-	sed -i "/^RELEASE_YEAR=/s/=.*$$/=$$current_year/" configure.ac
-.PHONY: update-release-year
-
 # Prevent incorrect NEWS edits.
-old_NEWS_hash = 8532b4ed4fb456eb71071a5cf8c258d4
+old_NEWS_hash = 54ad39275441a2a3fcbe6182da4f84fb
 
 exclude_file_name_regexp--sc_prohibit_undesirable_word_seq = \
   ^(maint\.mk|build-aux/texinfo\.tex)$$
@@ -148,5 +139,3 @@ exclude_file_name_regexp--sc_useless_cpp_parens = \
 exclude_file_name_regexp--sc_trailing_blank = ^build-aux/texinfo\.tex$$
 exclude_file_name_regexp--sc_two_space_separator_in_usage = \
   ^build-aux/gnupload$$
-exclude_file_name_regexp--sc_prohibit_defined_have_decl_tests = \
-  ^doc/autoconf\.texi$$

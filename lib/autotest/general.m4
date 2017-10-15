@@ -1,7 +1,7 @@
 # This file is part of Autoconf.                          -*- Autoconf -*-
 # M4 macros used in building test suites.
 m4_define([_AT_COPYRIGHT_YEARS], [
-Copyright (C) 2000-2017 Free Software Foundation, Inc.
+Copyright (C) 2000-2012 Free Software Foundation, Inc.
 ])
 
 # This file is part of Autoconf.  This program is free
@@ -22,7 +22,7 @@ Copyright (C) 2000-2017 Free Software Foundation, Inc.
 # You should have received a copy of the GNU General Public License
 # and a copy of the Autoconf Configure Script Exception along with
 # this program; see the files COPYINGv3 and COPYING.EXCEPTION
-# respectively.  If not, see <https://www.gnu.org/licenses/>.
+# respectively.  If not, see <http://www.gnu.org/licenses/>.
 
 
 # _m4_divert(DIVERSION-NAME)
@@ -363,7 +363,7 @@ at_fn_create_debugging_script ()
 {
   {
     echo "#! /bin/sh" &&
-    echo 'test ${ZSH_VERSION+y} dnl
+    echo 'test "${ZSH_VERSION+set}" = set dnl
 && alias -g '\''${1+"$[@]"}'\''='\''"$[@]"'\''' &&
     AS_ECHO(["cd '$at_dir'"]) &&
     AS_ECHO(["exec \${CONFIG_SHELL-$SHELL} \"$at_myself\" -v -d ]dnl
@@ -757,7 +757,7 @@ m4_ifdef([AT_PACKAGE_NAME],
 [m4_ifset([AT_PACKAGE_URL], [
 m4_defn([AT_PACKAGE_NAME]) home page: <AT_PACKAGE_URL>.])dnl
 m4_if(m4_index(m4_defn([AT_PACKAGE_NAME]), [GNU ]), [0], [
-General help using GNU software: <https://www.gnu.org/gethelp/>.])])
+General help using GNU software: <http://www.gnu.org/gethelp/>.])])
 _ATEOF
   exit $at_write_fail
 fi
@@ -1001,14 +1001,14 @@ m4_divert_push([PREPARE_TESTS])dnl
 } >&AS_MESSAGE_LOG_FD
 
 # Report what programs are being tested.
-for at_program in : `eval echo $at_tested`
+for at_program in : $at_tested
 do
   test "$at_program" = : && continue
   case $at_program in
     [[\\/]* | ?:[\\/]* ) $at_program_=$at_program ;;]
     * )
-    _AS_PATH_WALK([$PATH], [test -f "$as_dir$at_program" && break])
-    at_program_=$as_dir$at_program ;;
+    _AS_PATH_WALK([$PATH], [test -f "$as_dir/$at_program" && break])
+    at_program_=$as_dir/$at_program ;;
   esac
   if test -f "$at_program_"; then
     {
@@ -1367,7 +1367,7 @@ dnl Unfortunately, ksh93 fork-bombs when we send TSTP, so send STOP
 dnl if this might be ksh (STOP prevents possible TSTP handlers inside
 dnl AT_CHECKs from running).  Then stop ourselves.
 	  at_sig=TSTP
-	  test ${TMOUT+y} && at_sig=STOP
+	  test "${TMOUT+set}" = set && at_sig=STOP
 	  kill -$at_sig $at_pids 2>/dev/null
 	fi
 	kill -STOP $$
@@ -1794,8 +1794,7 @@ m4_defun([AT_ARG_OPTION_ARG],[_AT_ARG_OPTION([$1],[$2],1,[$3],[$4])])
 # must correspond to the version of the package.  PATH should be
 # already preset so the proper executable will be selected.
 m4_define([AT_TESTED],
-[m4_foreach_w([AT_test], [$1],
-  [m4_append_uniq([AT_tested], "m4_defn([AT_test])", [ ])])])
+[m4_append_uniq_w([AT_tested], [$1])])
 
 
 # AT_COPYRIGHT(TEXT, [FILTER = m4_newline])
@@ -1943,22 +1942,6 @@ m4_divert_text([BANNERS],
 @%:@ Category starts at test group m4_incr(AT_ordinal).
 at_banner_text_[]AT_banner_ordinal="AS_ESCAPE([$1])"])dnl
 ])# AT_BANNER
-
-
-# AT_DATA_UNQUOTED(FILE, CONTENTS)
-# -----------------------
-# Initialize an input data FILE with given CONTENTS, which should be
-# empty or end with a newline.
-# This macro is not robust to active symbols in CONTENTS *on purpose*.
-# If you don't want CONTENTS to be evaluated, quote it twice.
-# In addition, it does not quote shell variables.  For example, it
-# can be used to generate data files containing a carriage return.
-_AT_DEFINE_SETUP([AT_DATA_UNQUOTED],
-[m4_if([$2], [], [: >$1],
-       [$2], [[]], [: >$1],
-[cat >$1 <<_ATEOF
-$2[]_ATEOF
-])])
 
 
 # AT_DATA(FILE, CONTENTS)

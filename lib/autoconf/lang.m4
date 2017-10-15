@@ -1,6 +1,6 @@
 # This file is part of Autoconf.                       -*- Autoconf -*-
 # Programming languages support.
-# Copyright (C) 2000-2002, 2004-2017 Free Software Foundation, Inc.
+# Copyright (C) 2000-2002, 2004-2012 Free Software Foundation, Inc.
 
 # This file is part of Autoconf.  This program is free
 # software; you can redistribute it and/or modify it under the
@@ -20,7 +20,7 @@
 # You should have received a copy of the GNU General Public License
 # and a copy of the Autoconf Configure Script Exception along with
 # this program; see the files COPYINGv3 and COPYING.EXCEPTION
-# respectively.  If not, see <https://www.gnu.org/licenses/>.
+# respectively.  If not, see <http://www.gnu.org/licenses/>.
 
 # Written by David MacKenzie, with help from
 # Franc,ois Pinard, Karl Berry, Richard Pixley, Ian Lance Taylor,
@@ -343,7 +343,7 @@ AC_DEFUN([AC_LANG_COMPILER_REQUIRE],
 # some Fortran compilers (e.g., SGI) might consider it's a
 # continuation line, and warn instead of reporting an error.
 m4_define([_AC_LANG_COMPILER_GNU],
-[AC_CACHE_CHECK([whether the compiler supports GNU _AC_LANG],
+[AC_CACHE_CHECK([whether we are using the GNU _AC_LANG compiler],
 		[ac_cv_[]_AC_LANG_ABBREV[]_compiler_gnu],
 [_AC_COMPILE_IFELSE([AC_LANG_PROGRAM([], [[#ifndef __GNUC__
        choke me
@@ -553,7 +553,7 @@ do
 	# certainly right.
 	break;;
     *.* )
-	if test ${ac_cv_exeext+y} && test "$ac_cv_exeext" != no;
+	if test "${ac_cv_exeext+set}" = set && test "$ac_cv_exeext" != no;
 	then :; else
 	   ac_cv_exeext=`expr "$ac_file" : ['[^.]*\(\..*\)']`
 	fi
@@ -592,21 +592,11 @@ ac_exeext=$ac_cv_exeext
 # detect cross-compiling on Blue Gene.  Note also that AC_COMPUTE_INT
 # requires programs that create files when not cross-compiling, so it
 # is safe and not a bad idea to check for this capability in general.
-#
-# Another false negative would occur on many modern linux distributions,
-# which would have Wine run automatically for Windows binaries. This is
-# a default configuration on several Debian-derivated distributions for
-# instance (see `update-binfmts`).
-# As a consequence the simple test program would run without errors,
-# even though we are on an obvious cross-compilation case and further
-# more complicated tests would fail.
 m4_define([_AC_COMPILER_EXEEXT_CROSS],
 [# Check that the compiler produces executables we can run.  If not, either
 # the compiler is broken, or we cross compile.
 AC_MSG_CHECKING([whether we are cross compiling])
-if test "$cross_compiling" = maybe && test "x$build" != "x$host"; then
-  cross_compiling=yes
-elif test "$cross_compiling" != yes; then
+if test "$cross_compiling" != yes; then
   _AC_DO_VAR(ac_link)
   if _AC_DO_TOKENS([./conftest$ac_cv_exeext]); then
     cross_compiling=no
@@ -666,7 +656,7 @@ AC_MSG_RESULT([$ac_cv_exeext])
 # by checking whether `_AC_COMPILER_EXEEXT' has been expanded.
 #
 # See _AC_COMPILER_EXEEXT_CROSS for why we need _AC_LANG_IO_PROGRAM.
-AC_DEFUN([_AC_COMPILER_EXEEXT],
+m4_define([_AC_COMPILER_EXEEXT],
 [AC_LANG_CONFTEST([_AC_LANG_NULL_PROGRAM])
 ac_clean_files_save=$ac_clean_files
 ac_clean_files="$ac_clean_files a.out a.out.dSYM a.exe b.out"

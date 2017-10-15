@@ -1,128 +1,5 @@
 GNU Autoconf NEWS - User visible changes.
 
-* Noteworthy changes in release ?.? (????-??-??) [?]
-
-** Configure scripts now support a '--runstatedir' option, which
-   defaults to '${localstatedir}/run', and which can be used to place
-   per-process temporary runtime files (such as pid files) into '/run'
-   instead of '/var/run'.
-
-** The use of the long-deprecated name 'configure.in' for the autoconf
-   input file now elicits a warning in the 'obsolete' category.
-
-** Older version of automake and aclocal (< 1.8) are no longer supported
-   by autoreconf.
-
-** Use of printf is now recommended instead of working around bugs in
-   echo.  Macros AS_ECHO and AS_ECHO_N now expand unconditionally to
-   'printf "%s\n"' and 'printf %s'.
-
-** AC_CHECK_HEADER and AC_CHECK_HEADERS now default to doing only a
-   compilation test.  This completes the transition from preprocessor-
-   based header tests begun in Autoconf 2.56.
-
-   The double test that was the default since Autoconf 2.64 is no
-   longer available.  You can still request a preprocessor-only test
-   by specifying '-' as the fourth argument to either macro, but this
-   is now deprecated.  If you really need that behavior use
-   AC_PREPROC_IFELSE.
-
-** When checking for missing templates, autoheader now takes any
-   templates defined in the inputs of secondary config headers into
-   account.  This makes it possible to use AC_DEFINE for secondary
-   headers without duplicating the template in the main config header.
-
-** Macros
-
-- New macro AC_C__GENERIC.
-
-- AC_C_VARARRAYS now defines __STDC_NO_VLA__ if variable-length
-  arrays are not supported and if the compiler does not already
-  define __STDC_NO_VLA__.  This is for compatibility with C11.
-  For backward compatibility with Autoconf 2.61-2.69 AC_C_VARARRAYS
-  still defines HAVE_C_VARARRAYS, but this usage is obsolescent.
-
-- AC_CONFIG_MACRO_DIRS
-  New macro, used to declare multiple directories when looking for
-  local M4 macros.  This macro overcomes some of the shortfalls in the
-  older AC_CONFIG_MACRO_DIR, which could only be used once; although
-  the older macro remains for compatibility with older tools.  The
-  newer macro will be used by the upcoming Automake 1.13 release to
-  eliminate the need to specify ACLOCAL_AMFLAGS in Makefile.am.
-
-- AC_PROG_CC now prefers C11 if available, falling back on C99 and
-  then on C89 as before.  Similarly, AC_PROG_CXX now prefers C++11
-  if available, falling back on C++98.
-
-- AC_PROG_CC is now defined via AC_DEFUN_ONCE, to avoid bloat in 'configure'.
-
-- AC_PROG_CC_STDC, AC_PROG_CC_C89, AC_PROG_CC_C99 have been marked as obsolete.
-  Applications should use AC_PROG_CC.
-
-- AC_PROG_YACC now uses 'bison -o y.tab.c' instead of 'bison -y', so that
-  by default it no longer warns about Bison extensions.  Add -Wyacc to
-  YFLAGS to enable these warnings.
-
-- AC_USE_SYSTEM_EXTENSIONS now enables more extensions on HP-UX,
-  macOS, and MINIX, as well as on systems conforming to recent
-  ISO/IEC C technical reports and specifications.
-
-- AC_CHECK_DECL and AC_CHECK_DECLS can now report missing declarations for
-  functions that are also Clang compiler builtins.
-
-- AC_FUNC_VFORK now checks for the signal-handling bug in Solaris 2.4 'vfork'.
-  Formerly, it ignored this bug, so that Emacs could use some tricky
-  code on that platform.  Solaris 2.4 has not been supported since
-  2003 and nowadays it's better to omit that old trick.
-
-- Autotest provides a new macro AT_DATA_UNQUOTED, similar to AT_DATA
-  but processing variable substitutions, command substitutions and
-  backslashes in the contents argument.
-
-- AC_CONFIG_TESTDIR will automatically pass EXEEXT to a testsuite (via
-  the atconfig file).
-
-- AT_TESTED arguments can use variable or command substitutions, including
-  in particular $EXEEXT
-
-- AC_INCLUDES_DEFAULT has been streamlined.  It now assumes that the
-  ISO C90 headers 'stdlib.h' and 'string.h' are unconditionally
-  available, and does not include the pre-standard header 'memory.h'
-  at all.  If the POSIX header 'strings.h' exists, it will be
-  included; it is assumed to be safe to include both 'string.h' and
-  'strings.h' in the same source file.  We are not aware of any
-  current system that violates any of the above assumptions.
-
-  For compatibility's sake, the C preprocessor macros STDC_HEADERS,
-  HAVE_STDLIB_H, and HAVE_STRING_H are defined unconditionally.
-  These preprocessor macros should be considered obsolescent.
-
-  Future releases of Autoconf may reduce the set of headers checked
-  for by AC_INCLUDES_DEFAULT.
-
-- AC_HEADER_STDC and AC_HEADER_TIME are now stubs which will be
-  removed from 'configure.ac' by 'autoupdate'.  For compatibility's
-  sake, the stubs (and their 'autoupdate' replacements) continue to
-  define the C preprocessor macros STDC_HEADERS and TIME_WITH_SYS_TIME,
-  respectively, but without actually checking for the ancient systems
-  where formerly those macros would not be defined.
-
-  These macros were already labeled obsolescent in the manual.
-
-- New macro, AC_CHECK_INCLUDES_DEFAULT.  It causes the checks normally
-  performed as a side-effect by AC_INCLUDES_DEFAULT to happen at that
-  point in 'configure', if they haven't already been done.  Autoupdate
-  will replace certain obsolete constructs, whose only remaining
-  useful effect is to trigger those checks, with this macro.  It is
-  unlikely to be useful otherwise.
-
-- The AC_CHECK_FUNCS_ONCE and AC_CHECK_HEADERS_ONCE macros now support
-  use with multiple languages, rather than forcing all checks in the
-  language used by the first encounter of the macro.
-
-** Man pages for config.guess and config.sub are no longer provided.
-They were moved to the master source tree for config.guess and config.sub.
-
 * Noteworthy changes in release 2.69 (2012-04-24) [stable]
 
 ** Autoconf now requires perl 5.6 or better (but generated configure
@@ -1380,7 +1257,7 @@ Release tips:
 
 - GNATS
   The GNATS base moved to
-  https://bugs.gnu.org/cgi-bin/gnatsweb.pl?database=autoconf
+  http://bugs.gnu.org/cgi-bin/gnatsweb.pl?database=autoconf
   (It is no longer available, though.)
 
 ** Misc.
@@ -2225,7 +2102,7 @@ Various bug fixes.
 
 -----
 
-Copyright (C) 1993-1996, 1998-2017 Free Software Foundation, Inc.
+Copyright (C) 1993-1996, 1998-2012 Free Software Foundation, Inc.
 
 Copying and distribution of this file, with or without modification,
 are permitted in any medium without royalty provided the copyright

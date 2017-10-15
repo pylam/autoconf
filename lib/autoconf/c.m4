@@ -1,6 +1,6 @@
 # This file is part of Autoconf.			-*- Autoconf -*-
 # Programming languages support.
-# Copyright (C) 2001-2017 Free Software Foundation, Inc.
+# Copyright (C) 2001-2012 Free Software Foundation, Inc.
 
 # This file is part of Autoconf.  This program is free
 # software; you can redistribute it and/or modify it under the
@@ -20,7 +20,7 @@
 # You should have received a copy of the GNU General Public License
 # and a copy of the Autoconf Configure Script Exception along with
 # this program; see the files COPYINGv3 and COPYING.EXCEPTION
-# respectively.  If not, see <https://www.gnu.org/licenses/>.
+# respectively.  If not, see <http://www.gnu.org/licenses/>.
 
 # Written by David MacKenzie, with help from
 # Akim Demaille, Paul Eggert,
@@ -97,7 +97,7 @@ m4_define([AC_LANG_PROGRAM(C)],
 m4_ifdef([_AC_LANG_PROGRAM_C_F77_HOOKS], [_AC_LANG_PROGRAM_C_F77_HOOKS])[]dnl
 m4_ifdef([_AC_LANG_PROGRAM_C_FC_HOOKS], [_AC_LANG_PROGRAM_C_FC_HOOKS])[]dnl
 int
-main (void)
+main ()
 {
 dnl Do *not* indent the following line: there may be CPP directives.
 dnl Don't move the `;' right after for the same reason.
@@ -154,9 +154,16 @@ m4_define([AC_LANG_FUNC_LINK_TRY(C)],
 #define $1 innocuous_$1
 
 /* System header to define __stub macros and hopefully few prototypes,
-   which can conflict with char $1 (); below.  */
+    which can conflict with char $1 (); below.
+    Prefer <limits.h> to <assert.h> if __STDC__ is defined, since
+    <limits.h> exists even on freestanding compilers.  */
 
-#include <limits.h>
+#ifdef __STDC__
+# include <limits.h>
+#else
+# include <assert.h>
+#endif
+
 #undef $1
 
 /* Override any GCC internal prototype to avoid an error.
@@ -341,9 +348,15 @@ for ac_[]_AC_LANG_ABBREV[]_preproc_warn_flag in '' yes
 do
   # Use a header file that comes with gcc, so configuring glibc
   # with a fresh cross-compiler works.
+  # Prefer <limits.h> to <assert.h> if __STDC__ is defined, since
+  # <limits.h> exists even on freestanding compilers.
   # On the NeXT, cc -E runs the code through the compiler's parser,
   # not just through cpp. "Syntax error" is here to catch this case.
-  _AC_PREPROC_IFELSE([AC_LANG_SOURCE([[@%:@include <limits.h>
+  _AC_PREPROC_IFELSE([AC_LANG_SOURCE([[@%:@ifdef __STDC__
+@%:@ include <limits.h>
+@%:@else
+@%:@ include <assert.h>
+@%:@endif
 		     Syntax error]])],
 		     [],
 		     [# Broken: fails on valid input.
@@ -432,7 +445,7 @@ AU_DEFUN([ac_cv_prog_gcc],
 AN_MAKEVAR([CC],  [AC_PROG_CC])
 AN_PROGRAM([cc],  [AC_PROG_CC])
 AN_PROGRAM([gcc], [AC_PROG_CC])
-AC_DEFUN_ONCE([AC_PROG_CC],
+AC_DEFUN([AC_PROG_CC],
 [AC_LANG_PUSH(C)dnl
 AC_ARG_VAR([CC],     [C compiler command])dnl
 AC_ARG_VAR([CFLAGS], [C compiler flags])dnl
@@ -457,9 +470,6 @@ fi
 if test -z "$CC"; then
   AC_CHECK_TOOLS(CC, cl.exe)
 fi
-if test -z "$CC"; then
-  AC_CHECK_TOOL(CC, clang)
-fi
 ])
 
 test -z "$CC" && AC_MSG_FAILURE([no acceptable C compiler found in \$PATH])
@@ -468,7 +478,7 @@ test -z "$CC" && AC_MSG_FAILURE([no acceptable C compiler found in \$PATH])
 _AS_ECHO_LOG([checking for _AC_LANG compiler version])
 set X $ac_compile
 ac_compiler=$[2]
-for ac_option in --version -v -V -qversion -version; do
+for ac_option in --version -v -V -qversion; do
   _AC_DO_LIMIT([$ac_compiler $ac_option >&AS_MESSAGE_LOG_FD])
 done
 
@@ -481,19 +491,7 @@ else
   GCC=
 fi
 _AC_PROG_CC_G
-dnl
-dnl Set ac_prog_cc_stdc to the supported C version.
-dnl Also set the documented variable ac_cv_prog_cc_stdc;
-dnl its name was chosen when it was cached, but it is no longer cached.
-_AC_PROG_CC_C11([ac_prog_cc_stdc=c11
-		 ac_cv_prog_cc_stdc=$ac_cv_prog_cc_c11],
-  [_AC_PROG_CC_C99([ac_prog_cc_stdc=c99
-		    ac_cv_prog_cc_stdc=$ac_cv_prog_cc_c99],
-     [_AC_PROG_CC_C89([ac_prog_cc_stdc=c89
-		       ac_cv_prog_cc_stdc=$ac_cv_prog_cc_c89],
-		      [ac_prog_cc_stdc=no
-		       ac_cv_prog_cc_stdc=no])])])
-dnl
+_AC_PROG_CC_C89
 AC_LANG_POP(C)dnl
 ])# AC_PROG_CC
 
@@ -505,7 +503,7 @@ AC_LANG_POP(C)dnl
 # versions of a library), tasteless as that idea is.
 # Don't consider -g to work if it generates warnings when plain compiles don't.
 m4_define([_AC_PROG_CC_G],
-[ac_test_CFLAGS=${CFLAGS+y}
+[ac_test_CFLAGS=${CFLAGS+set}
 ac_save_CFLAGS=$CFLAGS
 AC_CACHE_CHECK(whether $CC accepts -g, ac_cv_prog_cc_g,
   [ac_save_c_werror_flag=$ac_c_werror_flag
@@ -522,7 +520,7 @@ AC_CACHE_CHECK(whether $CC accepts -g, ac_cv_prog_cc_g,
 	 _AC_COMPILE_IFELSE([AC_LANG_PROGRAM()],
 	   [ac_cv_prog_cc_g=yes])])])
    ac_c_werror_flag=$ac_save_c_werror_flag])
-if test $ac_test_CFLAGS; then
+if test "$ac_test_CFLAGS" = set; then
   CFLAGS=$ac_save_CFLAGS
 elif test $ac_cv_prog_cc_g = yes; then
   if test "$GCC" = yes; then
@@ -605,7 +603,7 @@ then
 else
   eval ac_cv_prog_cc_${ac_cc}_c_o=no
 fi
-rm -rf core conftest*
+rm -f core conftest*
 ])dnl
 if eval test \$ac_cv_prog_cc_${ac_cc}_c_o = yes; then
   AC_MSG_RESULT([yes])
@@ -707,7 +705,7 @@ if test -z "$CXX"; then
   else
     AC_CHECK_TOOLS(CXX,
 		   [m4_default([$1],
-			       [g++ c++ gpp aCC CC cxx cc++ cl.exe FCC KCC RCC xlC_r xlC clang++])],
+			       [g++ c++ gpp aCC CC cxx cc++ cl.exe FCC KCC RCC xlC_r xlC])],
 		   g++)
   fi
 fi
@@ -728,13 +726,6 @@ else
   GXX=
 fi
 _AC_PROG_CXX_G
-_AC_PROG_CXX_CXX11([ac_prog_cxx_stdcxx=cxx11
-		    ac_cv_prog_cxx_stdcxx=$ac_cv_prog_cxx_cxx11
-		    ac_cv_prog_cxx_cxx98=$ac_cv_prog_cxx_cxx11],
-   [_AC_PROG_CXX_CXX98([ac_prog_cxx_stdcxx=cxx98
-		        ac_cv_prog_cxx_stdcxx=$ac_cv_prog_cxx_cxx98],
-		       [ac_prog_cxx_stdcxx=no
-		        ac_cv_prog_cxx_stdcxx=no])])
 AC_LANG_POP(C++)dnl
 ])# AC_PROG_CXX
 
@@ -746,7 +737,7 @@ AC_LANG_POP(C++)dnl
 # normal versions of a library), tasteless as that idea is.
 # Don't consider -g to work if it generates warnings when plain compiles don't.
 m4_define([_AC_PROG_CXX_G],
-[ac_test_CXXFLAGS=${CXXFLAGS+y}
+[ac_test_CXXFLAGS=${CXXFLAGS+set}
 ac_save_CXXFLAGS=$CXXFLAGS
 AC_CACHE_CHECK(whether $CXX accepts -g, ac_cv_prog_cxx_g,
   [ac_save_cxx_werror_flag=$ac_cxx_werror_flag
@@ -763,7 +754,7 @@ AC_CACHE_CHECK(whether $CXX accepts -g, ac_cv_prog_cxx_g,
 	 _AC_COMPILE_IFELSE([AC_LANG_PROGRAM()],
 	   [ac_cv_prog_cxx_g=yes])])])
    ac_cxx_werror_flag=$ac_save_cxx_werror_flag])
-if test $ac_test_CXXFLAGS; then
+if test "$ac_test_CXXFLAGS" = set; then
   CXXFLAGS=$ac_save_CXXFLAGS
 elif test $ac_cv_prog_cxx_g = yes; then
   if test "$GXX" = yes; then
@@ -802,7 +793,7 @@ if _AC_DO_VAR(ac_try) &&
 else
   ac_cv_prog_cxx_c_o=no
 fi
-rm -rf conftest*])
+rm -f conftest*])
 if test $ac_cv_prog_cxx_c_o = no; then
   AC_DEFINE(CXX_NO_MINUS_C_MINUS_O, 1,
 	    [Define to 1 if your C++ compiler doesn't accept
@@ -886,7 +877,7 @@ _AC_ARG_VAR_LIBS()dnl
 _AC_ARG_VAR_CPPFLAGS()dnl
 _AC_ARG_VAR_PRECIOUS([OBJC])dnl
 AC_CHECK_TOOLS(OBJC,
-	       [m4_default([$1], [gcc objcc objc cc CC clang])],
+	       [m4_default([$1], [gcc objcc objc cc CC])],
 	       gcc)
 # Provide some information about the compiler.
 _AS_ECHO_LOG([checking for _AC_LANG compiler version])
@@ -916,7 +907,7 @@ AC_LANG_POP(Objective C)dnl
 # normal versions of a library), tasteless as that idea is.
 # Don't consider -g to work if it generates warnings when plain compiles don't.
 m4_define([_AC_PROG_OBJC_G],
-[ac_test_OBJCFLAGS=${OBJCFLAGS+y}
+[ac_test_OBJCFLAGS=${OBJCFLAGS+set}
 ac_save_OBJCFLAGS=$OBJCFLAGS
 AC_CACHE_CHECK(whether $OBJC accepts -g, ac_cv_prog_objc_g,
   [ac_save_objc_werror_flag=$ac_objc_werror_flag
@@ -933,7 +924,7 @@ AC_CACHE_CHECK(whether $OBJC accepts -g, ac_cv_prog_objc_g,
 	 _AC_COMPILE_IFELSE([AC_LANG_PROGRAM()],
 	   [ac_cv_prog_objc_g=yes])])])
    ac_objc_werror_flag=$ac_save_objc_werror_flag])
-if test $ac_test_OBJCFLAGS; then
+if test "$ac_test_OBJCFLAGS" = set; then
   OBJCFLAGS=$ac_save_OBJCFLAGS
 elif test $ac_cv_prog_objc_g = yes; then
   if test "$GOBJC" = yes; then
@@ -1055,7 +1046,7 @@ AC_LANG_POP(Objective C++)dnl
 # normal versions of a library), tasteless as that idea is.
 # Don't consider -g to work if it generates warnings when plain compiles don't.
 m4_define([_AC_PROG_OBJCXX_G],
-[ac_test_OBJCXXFLAGS=${OBJCXXFLAGS+y}
+[ac_test_OBJCXXFLAGS=${OBJCXXFLAGS+set}
 ac_save_OBJCXXFLAGS=$OBJCXXFLAGS
 AC_CACHE_CHECK(whether $OBJCXX accepts -g, ac_cv_prog_objcxx_g,
   [ac_save_objcxx_werror_flag=$ac_objcxx_werror_flag
@@ -1072,7 +1063,7 @@ AC_CACHE_CHECK(whether $OBJCXX accepts -g, ac_cv_prog_objcxx_g,
 	 _AC_COMPILE_IFELSE([AC_LANG_PROGRAM()],
 	   [ac_cv_prog_objcxx_g=yes])])])
    ac_objcxx_werror_flag=$ac_save_objcx_werror_flag])
-if test $ac_test_OBJCXXFLAGS; then
+if test "$ac_test_OBJCXXFLAGS" = set; then
   OBJCXXFLAGS=$ac_save_OBJCXXFLAGS
 elif test $ac_cv_prog_objcxx_g = yes; then
   if test "$GOBJCXX" = yes; then
@@ -1174,7 +1165,7 @@ dnl SVR4			-Xc -D__EXTENSIONS__
 # helps, append it to CC.  If eventually successful, run ACTION-IF-AVAILABLE,
 # else ACTION-IF-UNAVAILABLE.
 AC_DEFUN([_AC_C_STD_TRY],
-[AC_MSG_CHECKING([for $CC option to enable ]m4_translit($1, [c], [C])[ features])
+[AC_MSG_CHECKING([for $CC option to accept ISO ]m4_translit($1, [c], [C]))
 AC_CACHE_VAL(ac_cv_prog_cc_$1,
 [ac_cv_prog_cc_$1=no
 ac_save_CC=$CC
@@ -1188,27 +1179,33 @@ done
 rm -f conftest.$ac_ext
 CC=$ac_save_CC
 ])# AC_CACHE_VAL
-ac_prog_cc_stdc_options=
 case "x$ac_cv_prog_cc_$1" in
   x)
     AC_MSG_RESULT([none needed]) ;;
   xno)
     AC_MSG_RESULT([unsupported]) ;;
   *)
-    ac_prog_cc_stdc_options=" $ac_cv_prog_cc_$1"
-    CC=$CC$ac_prog_cc_stdc_options
+    CC="$CC $ac_cv_prog_cc_$1"
     AC_MSG_RESULT([$ac_cv_prog_cc_$1]) ;;
 esac
 AS_IF([test "x$ac_cv_prog_cc_$1" != xno], [$5], [$6])
 ])# _AC_C_STD_TRY
 
-# _AC_C_C99_TEST_HEADER
-# ---------------------
-# A C header suitable for testing for C99.
-AC_DEFUN([_AC_C_C99_TEST_HEADER],
+
+# _AC_PROG_CC_C99 ([ACTION-IF-AVAILABLE], [ACTION-IF-UNAVAILABLE])
+# ----------------------------------------------------------------
+# If the C compiler is not in ISO C99 mode by default, try to add an
+# option to output variable CC to make it so.  This macro tries
+# various options that select ISO C99 on some system or another.  It
+# considers the compiler to be in ISO C99 mode if it handles _Bool,
+# // comments, flexible array members, inline, long long int, mixed
+# code and declarations, named initialization of structs, restrict,
+# va_copy, varargs macros, variable declarations in for loops and
+# variable length arrays.
+AC_DEFUN([_AC_PROG_CC_C99],
+[_AC_C_STD_TRY([c99],
 [[#include <stdarg.h>
 #include <stdbool.h>
-#include <stddef.h>
 #include <stdlib.h>
 #include <wchar.h>
 #include <stdio.h>
@@ -1268,7 +1265,7 @@ test_restrict (ccp restrict text)
 }
 
 // Check varargs and va_copy.
-static bool
+static void
 test_varargs (const char *format, ...)
 {
   va_list args;
@@ -1276,9 +1273,9 @@ test_varargs (const char *format, ...)
   va_list args_copy;
   va_copy (args_copy, args);
 
-  const char *str = "";
-  int number = 0;
-  float fnumber = 0;
+  const char *str;
+  int number;
+  float fnumber;
 
   while (*format)
     {
@@ -1299,14 +1296,8 @@ test_varargs (const char *format, ...)
     }
   va_end (args_copy);
   va_end (args);
-
-  return *str && number && fnumber;
-}]])# _AC_C_C99_TEST_HEADER
-
-# _AC_C_C99_TEST_BODY
-# -------------------
-# A C body suitable for testing for C99, assuming the corresponding header.
-AC_DEFUN([_AC_C_C99_TEST_BODY],
+}
+]],
 [[
   // Check bool.
   _Bool success = false;
@@ -1317,7 +1308,7 @@ AC_DEFUN([_AC_C_C99_TEST_BODY],
   char *restrict newvar = "Another string";
 
   // Check varargs.
-  success &= test_varargs ("s, d' f .", "string", 65, 34.234);
+  test_varargs ("s, d' f .", "string", 65, 34.234);
   test_varargs_macros ();
 
   // Check flexible array members.
@@ -1342,27 +1333,10 @@ AC_DEFUN([_AC_C_C99_TEST_BODY],
   // work around unused variable warnings
   return (!success || bignum == 0LL || ubignum == 0uLL || newvar[0] == 'x'
 	  || dynamic_array[ni.number - 1] != 543);
-]])
-
-# _AC_PROG_CC_C99 ([ACTION-IF-AVAILABLE], [ACTION-IF-UNAVAILABLE])
-# ----------------------------------------------------------------
-# If the C compiler is not in ISO C99 mode by default, try to add an
-# option to output variable CC to make it so.  This macro tries
-# various options that select ISO C99 on some system or another.  It
-# considers the compiler to be in ISO C99 mode if it handles _Bool,
-# // comments, flexible array members, inline, long long int, mixed
-# code and declarations, named initialization of structs, restrict,
-# va_copy, varargs macros, variable declarations in for loops and
-# variable length arrays.
-AC_DEFUN([_AC_PROG_CC_C99],
-[_AC_C_STD_TRY([c99],
-[_AC_C_C99_TEST_HEADER],
-[_AC_C_C99_TEST_BODY],
+]],
 dnl Try
 dnl GCC		-std=gnu99 (unused restrictive modes: -std=c99 -std=iso9899:1999)
-dnl IBM XL C	-qlanglvl=extc1x (V12.1; does not pass C11 test)
-dnl IBM XL C	-qlanglvl=extc99
-dnl		(pre-V12.1; unused restrictive mode: -qlanglvl=stdc99)
+dnl AIX		-qlanglvl=extc99 (unused restrictive mode: -qlanglvl=stdc99)
 dnl HP cc	-AC99
 dnl Intel ICC	-std=c99, -c99 (deprecated)
 dnl IRIX	-c99
@@ -1376,114 +1350,45 @@ dnl		just the module.  Instead, define the (private) symbol
 dnl		_STDC_C99, which suppresses a bogus failure in <stdbool.h>.
 dnl		The resulting compiler passes the test case here, and that's
 dnl		good enough.  For more, please see the thread starting at:
-dnl           https://lists.gnu.org/archive/html/autoconf/2010-12/msg00059.html
+dnl            http://lists.gnu.org/archive/html/autoconf/2010-12/msg00059.html
 dnl Tru64	-c99
 dnl with extended modes being tried first.
-[[-std=gnu99 -std=c99 -c99 -AC99 -D_STDC_C99= -qlanglvl=extc1x -qlanglvl=extc99]], [$1], [$2])[]dnl
+[[-std=gnu99 -std=c99 -c99 -AC99 -D_STDC_C99= -qlanglvl=extc99]], [$1], [$2])[]dnl
 ])# _AC_PROG_CC_C99
-
-
-# _AC_PROG_CC_C11 ([ACTION-IF-AVAILABLE], [ACTION-IF-UNAVAILABLE])
-# ----------------------------------------------------------------
-# If the C compiler is not in ISO C11 mode by default, try to add an
-# option to output variable CC to make it so.  This macro tries
-# various options that select ISO C11 on some system or another.  It
-# considers the compiler to be in ISO C11 mode if it handles _Alignas,
-# _Alignof, _Noreturn, _Static_assert, UTF-8 string literals,
-# duplicate typedefs, and anonymous structures and unions.
-AC_DEFUN([_AC_PROG_CC_C11],
-[_AC_C_STD_TRY([c11],
-[_AC_C_C99_TEST_HEADER[
-// Check _Alignas.
-char _Alignas (double) aligned_as_double;
-char _Alignas (0) no_special_alignment;
-extern char aligned_as_int;
-char _Alignas (0) _Alignas (int) aligned_as_int;
-
-// Check _Alignof.
-enum
-{
-  int_alignment = _Alignof (int),
-  int_array_alignment = _Alignof (int[100]),
-  char_alignment = _Alignof (char)
-};
-_Static_assert (0 < -_Alignof (int), "_Alignof is signed");
-
-// Check _Noreturn.
-int _Noreturn does_not_return (void) { for (;;) continue; }
-
-// Check _Static_assert.
-struct test_static_assert
-{
-  int x;
-  _Static_assert (sizeof (int) <= sizeof (long int),
-                  "_Static_assert does not work in struct");
-  long int y;
-};
-
-// Check UTF-8 literals.
-#define u8 syntax error!
-char const utf8_literal[] = u8"happens to be ASCII" "another string";
-
-// Check duplicate typedefs.
-typedef long *long_ptr;
-typedef long int *long_ptr;
-typedef long_ptr long_ptr;
-
-// Anonymous structures and unions -- taken from C11 6.7.2.1 Example 1.
-struct anonymous
-{
-  union {
-    struct { int i; int j; };
-    struct { int k; long int l; } w;
-  };
-  int m;
-} v1;
-]],
-[_AC_C_C99_TEST_BODY[
-  v1.i = 2;
-  v1.w.k = 5;
-  _Static_assert ((offsetof (struct anonymous, i)
-		   == offsetof (struct anonymous, w.k)),
-		  "Anonymous union alignment botch");
-]],
-dnl Try
-dnl GCC		-std=gnu11 (unused restrictive mode: -std=c11)
-dnl with extended modes being tried first.
-dnl
-dnl Do not try -qlanglvl=extc1x, because IBM XL C V12.1 (the latest version as
-dnl of September 2012) does not pass the C11 test.  For now, try extc1x when
-dnl compiling the C99 test instead, since it enables _Static_assert and
-dnl _Noreturn, which is a win.  If -qlanglvl=extc11 or -qlanglvl=extc1x passes
-dnl the C11 test in some future version of IBM XL C, we'll add it here,
-dnl preferably extc11.
-[[-std=gnu11]], [$1], [$2])[]dnl
-])# _AC_PROG_CC_C11
 
 
 # AC_PROG_CC_C89
 # --------------
-# Do not use AU_ALIAS here and in AC_PROG_CC_C99 and AC_PROG_CC_STDC,
-# as that'd be incompatible with how Automake redefines AC_PROG_CC.  See
-# <https://lists.gnu.org/archive/html/autoconf/2012-10/msg00048.html>.
-AU_DEFUN([AC_PROG_CC_C89],
-  [AC_REQUIRE([AC_PROG_CC])],
-  [$0 is obsolete; use AC_PROG_CC]
-)
+AC_DEFUN([AC_PROG_CC_C89],
+[ AC_REQUIRE([AC_PROG_CC])dnl
+  _AC_PROG_CC_C89
+])
+
 
 # AC_PROG_CC_C99
 # --------------
-AU_DEFUN([AC_PROG_CC_C99],
-  [AC_REQUIRE([AC_PROG_CC])],
-  [$0 is obsolete; use AC_PROG_CC]
-)
+AC_DEFUN([AC_PROG_CC_C99],
+[ AC_REQUIRE([AC_PROG_CC])dnl
+  _AC_PROG_CC_C99
+])
+
 
 # AC_PROG_CC_STDC
 # ---------------
-AU_DEFUN([AC_PROG_CC_STDC],
-  [AC_REQUIRE([AC_PROG_CC])],
-  [$0 is obsolete; use AC_PROG_CC]
-)
+AC_DEFUN([AC_PROG_CC_STDC],
+[ AC_REQUIRE([AC_PROG_CC])dnl
+  AS_CASE([$ac_cv_prog_cc_stdc],
+    [no], [ac_cv_prog_cc_c99=no; ac_cv_prog_cc_c89=no],
+	  [_AC_PROG_CC_C99([ac_cv_prog_cc_stdc=$ac_cv_prog_cc_c99],
+	     [_AC_PROG_CC_C89([ac_cv_prog_cc_stdc=$ac_cv_prog_cc_c89],
+			      [ac_cv_prog_cc_stdc=no])])])
+  AC_MSG_CHECKING([for $CC option to accept ISO Standard C])
+  AC_CACHE_VAL([ac_cv_prog_cc_stdc], [])
+  AS_CASE([$ac_cv_prog_cc_stdc],
+    [no], [AC_MSG_RESULT([unsupported])],
+    [''], [AC_MSG_RESULT([none needed])],
+	  [AC_MSG_RESULT([$ac_cv_prog_cc_stdc])])
+])
 
 
 # AC_C_BACKSLASH_A
@@ -1703,33 +1608,6 @@ dnl default behavior for universal builds.
 ])# AC_C_BIGENDIAN
 
 
-# AC_C__GENERIC
-# -------------
-# Define HAVE_C__GENERIC if _Generic works, a la C11.
-AN_IDENTIFIER([_Generic], [AC_C__GENERIC])
-AC_DEFUN([AC_C__GENERIC],
-[AC_CACHE_CHECK([for _Generic], ac_cv_c__Generic,
-[AC_COMPILE_IFELSE(
-   [AC_LANG_SOURCE(
-      [[int
-	 main (int argc, char **argv)
-	 {
-	   int a = _Generic (argc, int: argc = 1);
-	   int *b = &_Generic (argc, default: argc);
-	   char ***c = _Generic (argv, int: argc, default: argv ? &argv : 0);
-	   _Generic (1 ? 0 : b, int: a, default: b) = &argc;
-	   _Generic (a = 1, default: a) = 3;
-	   return a + !b + !c;
-	 }
-      ]])],
-   [ac_cv_c__Generic=yes],
-   [ac_cv_c__Generic=no])])
-if test $ac_cv_c__Generic = yes; then
-  AC_DEFINE([HAVE_C__GENERIC], 1,
-	    [Define to 1 if C11-style _Generic works.])
-fi
-])# AC_C__GENERIC
-
 # AC_C_INLINE
 # -----------
 # Do nothing if the compiler accepts the inline keyword.
@@ -1794,7 +1672,7 @@ AC_DEFUN([AC_C_CONST],
   /* NEC SVR4.0.2 mips cc rejects this.  */
   struct point {int x, y;};
   static struct point const zero = {0,0};
-  /* IBM XL C 1.02.0.0 rejects this.
+  /* AIX XL C 1.02.0.0 rejects this.
      It does not let you subtract one const X* pointer from another in
      an arm of an if-expression whose if-part is not a constant
      expression */
@@ -1822,7 +1700,7 @@ AC_DEFUN([AC_C_CONST],
     iptr p = 0;
     ++p;
   }
-  { /* IBM XL C 1.02.0.0 rejects this sort of thing, saying
+  { /* AIX XL C 1.02.0.0 rejects this sort of thing, saying
        "k.c", line 2.27: 1506-025 (S) Operand must be a modifiable lvalue. */
     struct s { int j; const int *ap[3]; } bx;
     struct s *b = &bx; b->j = 5;
@@ -1845,7 +1723,8 @@ fi
 
 # AC_C_RESTRICT
 # -------------
-# based on acx_restrict.m4, from the GNU Autoconf Macro Archive
+# based on acx_restrict.m4, from the GNU Autoconf Macro Archive at:
+# http://autoconf-archive.cryp.to/acx_restrict.html
 #
 # Determine whether the C/C++ compiler supports the "restrict" keyword
 # introduced in ANSI C99, or an equivalent.  Define "restrict" to the alternate
@@ -1858,24 +1737,19 @@ fi
 # Otherwise, define "restrict" to be empty.
 AN_IDENTIFIER([restrict], [AC_C_RESTRICT])
 AC_DEFUN([AC_C_RESTRICT],
-[AC_CACHE_CHECK([for C/C++ restrict keyword], [ac_cv_c_restrict],
+[AC_CACHE_CHECK([for C/C++ restrict keyword], ac_cv_c_restrict,
   [ac_cv_c_restrict=no
-   # Put '__restrict__' first, to avoid problems with glibc and non-GCC; see:
-   # https://lists.gnu.org/archive/html/bug-autoconf/2016-02/msg00006.html
-   # Put 'restrict' last, because C++ lacks it.
-   for ac_kw in __restrict__ __restrict _Restrict restrict; do
-     AC_COMPILE_IFELSE(
-      [AC_LANG_PROGRAM(
-	 [[typedef int *int_ptr;
-	   int foo (int_ptr $ac_kw ip) { return ip[0]; }
-	   int bar (int [$ac_kw]); /* Catch GCC bug 14050.  */
-	   int bar (int ip[$ac_kw]) { return ip[0]; }
-	 ]],
-	 [[int s[1];
-	   int *$ac_kw t = s;
-	   t[0] = 0;
-	   return foo (t) + bar (t);
-	 ]])],
+   # The order here caters to the fact that C++ does not require restrict.
+   for ac_kw in __restrict __restrict__ _Restrict restrict; do
+     AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
+      [[typedef int * int_ptr;
+	int foo (int_ptr $ac_kw ip) {
+	return ip[0];
+       }]],
+      [[int s[1];
+	int * $ac_kw t = s;
+	t[0] = 0;
+	return foo(t)]])],
       [ac_cv_c_restrict=$ac_kw])
      test "$ac_cv_c_restrict" != no && break
    done
@@ -1883,13 +1757,13 @@ AC_DEFUN([AC_C_RESTRICT],
  AH_VERBATIM([restrict],
 [/* Define to the equivalent of the C99 'restrict' keyword, or to
    nothing if this is not supported.  Do not define if restrict is
-   supported only directly.  */
+   supported directly.  */
 #undef restrict
-/* Work around a bug in Sun C++ 5.13: it does not support _Restrict or
+/* Work around a bug in Sun C++: it does not support _Restrict or
    __restrict__, even though the corresponding Sun C compiler ends up with
-   "#define restrict _Restrict" or "#define restrict __restrict__".
-   Perhaps some future version of Sun C++ will work with restrict;
-   if so, hopefully it defines __RESTRICT like Sun C does.  */
+   "#define restrict _Restrict" or "#define restrict __restrict__" in the
+   previous line.  Perhaps some future version of Sun C++ will work with
+   restrict; if so, hopefully it defines __RESTRICT like Sun C does.  */
 #if defined __SUNPRO_CC && !defined __RESTRICT
 # define _Restrict
 # define __restrict__
@@ -1953,11 +1827,15 @@ fi
 # options.
 AC_DEFUN([AC_C_PROTOTYPES],
 [AC_REQUIRE([AC_PROG_CC])dnl
-if test "$ac_prog_cc_stdc" != no; then
+AC_MSG_CHECKING([for function prototypes])
+if test "$ac_cv_prog_cc_c89" != no; then
+  AC_MSG_RESULT([yes])
   AC_DEFINE(PROTOTYPES, 1,
 	    [Define to 1 if the C compiler supports function prototypes.])
   AC_DEFINE(__PROTOTYPES, 1,
 	    [Define like PROTOTYPES; this can be used by system headers.])
+else
+  AC_MSG_RESULT([no])
 fi
 ])# AC_C_PROTOTYPES
 
@@ -2005,54 +1883,14 @@ AC_DEFUN([AC_C_VARARRAYS],
 [
   AC_CACHE_CHECK([for variable-length arrays],
     ac_cv_c_vararrays,
-    [AC_EGREP_CPP([defined],
-       [#ifdef __STDC_NO_VLA__
-	defined
-	#endif
-       ],
-       [ac_cv_c_vararrays='no: __STDC_NO_VLA__ is defined'],
-       [AC_COMPILE_IFELSE(
-	  [AC_LANG_PROGRAM(
-	     [[/* Test for VLA support.  This test is partly inspired
-		  from examples in the C standard.  Use at least two VLA
-		  functions to detect the GCC 3.4.3 bug described in:
-		  https://lists.gnu.org/archive/html/bug-gnulib/2014-08/msg00014.html
-		  */
-	       #ifdef __STDC_NO_VLA__
-		syntax error;
-	       #else
-		 extern int n;
-		 int B[100];
-		 int fvla (int m, int C[m][m]);
-
-		 int
-		 simple (int count, int all[static count])
-		 {
-		   return all[count - 1];
-		 }
-
-		 int
-		 fvla (int m, int C[m][m])
-		 {
-		   typedef int VLA[m][m];
-		   VLA x;
-		   int D[m];
-		   static int (*q)[m] = &B;
-		   int (*s)[n] = q;
-		   return C && &x[0][0] == &D[0] && &D[0] == s[0];
-		 }
-	       #endif
-	       ]])],
-	  [ac_cv_c_vararrays=yes],
-	  [ac_cv_c_vararrays=no])])])
-  if test "$ac_cv_c_vararrays" = yes; then
-    dnl This is for compatibility with Autoconf 2.61-2.69.
+    [AC_COMPILE_IFELSE(
+       [AC_LANG_PROGRAM([],
+	  [[static int x; char a[++x]; a[sizeof a - 1] = 0; return a[0];]])],
+       [ac_cv_c_vararrays=yes],
+       [ac_cv_c_vararrays=no])])
+  if test $ac_cv_c_vararrays = yes; then
     AC_DEFINE([HAVE_C_VARARRAYS], 1,
       [Define to 1 if C supports variable-length arrays.])
-  elif test "$ac_cv_c_vararrays" = no; then
-    AC_DEFINE([__STDC_NO_VLA__], 1,
-      [Define to 1 if C does not support variable-length arrays, and
-       if the compiler does not already define this.])
   fi
 ])
 
@@ -2111,7 +1949,7 @@ m4_define([_AC_LANG_OPENMP(C)],
  choke me
 #endif
 #include <omp.h>
-int main (void) { return omp_get_num_threads (); }
+int main () { return omp_get_num_threads (); }
 ])
 
 # _AC_LANG_OPENMP(C++)
@@ -2162,7 +2000,7 @@ AC_DEFUN([AC_OPENMP],
 	  dnl   Intel C              -openmp
 	  dnl   SGI C, PGI C         -mp
 	  dnl   Tru64 Compaq C       -omp
-	  dnl   IBM XL C (AIX, Linux) -qsmp=omp
+	  dnl   IBM C (AIX, Linux)   -qsmp=omp
           dnl   Cray CCE             -homp
           dnl   NEC SX               -Popenmp
           dnl   Lahey Fortran (Linux)  --openmp
@@ -2191,332 +2029,3 @@ AC_DEFUN([AC_OPENMP],
   fi
   AC_SUBST([OPENMP_]_AC_LANG_PREFIX[FLAGS])
 ])
-
-# _AC_CXX_STD_TRY(STANDARD, TEST-PROLOGUE, TEST-BODY, OPTION-LIST,
-#		  ACTION-IF-AVAILABLE, ACTION-IF-UNAVAILABLE)
-# ----------------------------------------------------------------
-# Check whether the C++ compiler accepts features of STANDARD (e.g
-# `cxx98', `cxx11') by trying to compile a program of TEST-PROLOGUE
-# and TEST-BODY.  If this fails, try again with each compiler option
-# in the space-separated OPTION-LIST; if one helps, append it to CXX.
-# If eventually successful, run ACTION-IF-AVAILABLE, else
-# ACTION-IF-UNAVAILABLE.
-AC_DEFUN([_AC_CXX_STD_TRY],
-[AC_MSG_CHECKING([for $CXX option to enable ]m4_translit(m4_translit($1, [x], [+]), [a-z], [A-Z])[ features])
-AC_LANG_PUSH(C++)dnl
-AC_CACHE_VAL(ac_cv_prog_cxx_$1,
-[ac_cv_prog_cxx_$1=no
-ac_save_CXX=$CXX
-AC_LANG_CONFTEST([AC_LANG_PROGRAM([$2], [$3])])
-for ac_arg in '' $4
-do
-  CXX="$ac_save_CXX $ac_arg"
-  _AC_COMPILE_IFELSE([], [ac_cv_prog_cxx_$1=$ac_arg])
-  test "x$ac_cv_prog_cxx_$1" != "xno" && break
-done
-rm -f conftest.$ac_ext
-CXX=$ac_save_CXX
-])# AC_CACHE_VAL
-ac_prog_cxx_stdcxx_options=
-case "x$ac_cv_prog_cxx_$1" in
-  x)
-    AC_MSG_RESULT([none needed]) ;;
-  xno)
-    AC_MSG_RESULT([unsupported]) ;;
-  *)
-    ac_prog_cxx_stdcxx_options=" $ac_cv_prog_cxx_$1"
-    CXX=$CXX$ac_prog_cxx_stdcxx_options
-    AC_MSG_RESULT([$ac_cv_prog_cxx_$1]) ;;
-esac
-AC_LANG_POP(C++)dnl
-AS_IF([test "x$ac_cv_prog_cxx_$1" != xno], [$5], [$6])
-])# _AC_CXX_STD_TRY
-
-# _AC_CXX_CXX98_TEST_HEADER
-# -------------------------
-# A C++ header suitable for testing for CXX98.
-AC_DEFUN([_AC_CXX_CXX98_TEST_HEADER],
-[[
-#include <algorithm>
-#include <cstdlib>
-#include <fstream>
-#include <iomanip>
-#include <iostream>
-#include <list>
-#include <map>
-#include <set>
-#include <sstream>
-#include <stdexcept>
-#include <string>
-#include <utility>
-#include <vector>
-
-namespace test {
-  typedef std::vector<std::string> string_vec;
-  typedef std::pair<int,bool> map_value;
-  typedef std::map<std::string,map_value> map_type;
-  typedef std::set<int> set_type;
-
-  template<typename T>
-  class printer {
-  public:
-    printer(std::ostringstream& os): os(os) {}
-    void operator() (T elem) { os << elem << std::endl; }
-  private:
-    std::ostringstream& os;
-  };
-}
-]])# _AC_CXX_CXX98_TEST_HEADER
-
-# _AC_CXX_CXX98_TEST_BODY
-# -----------------------
-# A C++ body suitable for testing for CXX98, assuming the corresponding header.
-AC_DEFUN([_AC_CXX_CXX98_TEST_BODY],
-[[
-
-try {
-  // Basic string.
-  std::string teststr("ASCII text");
-  teststr += " string";
-
-  // Simple vector.
-  test::string_vec testvec;
-  testvec.push_back(teststr);
-  testvec.push_back("foo");
-  testvec.push_back("bar");
-  if (testvec.size() != 3) {
-    throw std::runtime_error("vector size is not 1");
-  }
-
-  // Dump vector into stringstream and obtain string.
-  std::ostringstream os;
-  for (test::string_vec::const_iterator i = testvec.begin();
-       i != testvec.end(); ++i) {
-    if (i + 1 != testvec.end()) {
-      os << teststr << '\n';
-    }
-  }
-  // Check algorithms work.
-  std::for_each(testvec.begin(), testvec.end(), test::printer<std::string>(os));
-  std::string os_out = os.str();
-
-  // Test pair and map.
-  test::map_type testmap;
-  testmap.insert(std::make_pair(std::string("key"),
-                                std::make_pair(53,false)));
-
-  // Test set.
-  int values[] = {9, 7, 13, 15, 4, 18, 12, 10, 5, 3, 14, 19, 17, 8, 6, 20, 16, 2, 11, 1};
-  test::set_type testset(values, values + sizeof(values)/sizeof(values[0]));
-  std::list<int> testlist(testset.begin(), testset.end());
-  std::copy(testset.begin(), testset.end(), std::back_inserter(testlist));
-} catch (const std::exception& e) {
-  std::cerr << "Caught exception: " << e.what() << std::endl;
-
-  // Test fstream
-  std::ofstream of("test.txt");
-  of << "Test ASCII text\n" << std::flush;
-  of << "N= " << std::hex << std::setw(8) << std::left << 534 << std::endl;
-  of.close();
-}
-std::exit(0);
-]])
-
-# _AC_CXX_CXX11_TEST_HEADER
-# -------------------------
-# A C++ header suitable for testing for CXX11.
-AC_DEFUN([_AC_CXX_CXX11_TEST_HEADER],
-[[
-#include <deque>
-#include <functional>
-#include <memory>
-#include <tuple>
-#include <array>
-#include <regex>
-#include <iostream>
-
-namespace cxx11test
-{
-  typedef std::shared_ptr<std::string> sptr;
-  typedef std::weak_ptr<std::string> wptr;
-
-  typedef std::tuple<std::string,int,double> tp;
-  typedef std::array<int, 20> int_array;
-
-  constexpr int get_val() { return 20; }
-
-  struct testinit
-  {
-    int i;
-    double d;
-  };
-
-  class delegate  {
-  public:
-    delegate(int n) : n(n) {}
-    delegate(): delegate(2354) {}
-
-    virtual int getval() { return this->n; };
-  protected:
-    int n;
-  };
-
-  class overridden : public delegate {
-  public:
-    overridden(int n): delegate(n) {}
-    virtual int getval() override final { return this->n * 2; }
-  };
-
-  class nocopy {
-  public:
-    nocopy(int i): i(i) {}
-    nocopy() = default;
-    nocopy(const nocopy&) = delete;
-    nocopy & operator=(const nocopy&) = delete;
-  private:
-    int i;
-  };
-}
-]])# _AC_CXX_CXX11_TEST_HEADER
-
-# _AC_CXX_CXX11_TEST_BODY
-# -----------------------
-# A C++ body suitable for testing for CXX11, assuming the corresponding header.
-AC_DEFUN([_AC_CXX_CXX11_TEST_BODY],
-[[
-{
-  // Test auto and decltype
-  std::deque<int> d;
-  d.push_front(43);
-  d.push_front(484);
-  d.push_front(3);
-  d.push_front(844);
-  int total = 0;
-  for (auto i = d.begin(); i != d.end(); ++i) { total += *i; }
-
-  auto a1 = 6538;
-  auto a2 = 48573953.4;
-  auto a3 = "String literal";
-
-  decltype(a2) a4 = 34895.034;
-}
-{
-  // Test constexpr
-  short sa[cxx11test::get_val()] = { 0 };
-}
-{
-  // Test initializer lists
-  cxx11test::testinit il = { 4323, 435234.23544 };
-}
-{
-  // Test range-based for and lambda
-  cxx11test::int_array array = {9, 7, 13, 15, 4, 18, 12, 10, 5, 3, 14, 19, 17, 8, 6, 20, 16, 2, 11, 1};
-  for (int &x : array) { x += 23; }
-  std::for_each(array.begin(), array.end(), [](int v1){ std::cout << v1; });
-}
-{
-  using cxx11test::sptr;
-  using cxx11test::wptr;
-
-  sptr sp(new std::string("ASCII string"));
-  wptr wp(sp);
-  sptr sp2(wp);
-}
-{
-  cxx11test::tp tuple("test", 54, 45.53434);
-  double d = std::get<2>(tuple);
-  std::string s;
-  int i;
-  std::tie(s,i,d) = tuple;
-}
-{
-  static std::regex filename_regex("^_?([a-z0-9_.]+-)+[a-z0-9]+$");
-  std::string testmatch("Test if this string matches");
-  bool match = std::regex_search(testmatch, filename_regex);
-}
-{
-  cxx11test::int_array array = {9, 7, 13, 15, 4, 18, 12, 10, 5, 3, 14, 19, 17, 8, 6, 20, 16, 2, 11, 1};
-  cxx11test::int_array::size_type size = array.size();
-}
-{
-  // Test constructor delegation
-  cxx11test::delegate d1;
-  cxx11test::delegate d2();
-  cxx11test::delegate d3(45);
-}
-{
-  // Test override and final
-  cxx11test::overridden o1(55464);
-}
-{
-  // Test nullptr
-  char *c = nullptr;
-}
-{
-  // Test template brackets
-  std::vector<std::pair<int,char*>> v1;
-}
-{
-  // Unicode literals
-  char const *utf8 = u8"UTF-8 string \u2500";
-  char16_t const *utf16 = u"UTF-8 string \u2500";
-  char32_t const *utf32 = U"UTF-32 string \u2500";
-}
-]])
-
-# _AC_PROG_CXX_CXX98 ([ACTION-IF-AVAILABLE], [ACTION-IF-UNAVAILABLE])
-# -------------------------------------------------------------------
-
-# If the C++ compiler is not in ISO C++98 mode by default, try to add
-# an option to output variable CXX to make it so.  This macro tries
-# various options that select ISO C++98 on some system or another.  It
-# considers the compiler to be in ISO C++98 mode if it handles basic
-# features of the std namespace including: string, containers (list,
-# map, set, vector), streams (fstreams, iostreams, stringstreams,
-# iomanip), pair, exceptions and algorithms.
-
-
-AC_DEFUN([_AC_PROG_CXX_CXX98],
-[_AC_CXX_STD_TRY([cxx98],
-[_AC_CXX_CXX98_TEST_HEADER],
-[_AC_CXX_CXX98_TEST_BODY],
-dnl Try
-dnl GCC		-std=gnu++98 (unused restrictive mode: -std=c++98)
-dnl IBM XL C	-qlanglvl=extended
-dnl HP aC++	-AA
-dnl Intel ICC	-std=gnu++98
-dnl Solaris	N/A (default)
-dnl Tru64	N/A (default, but -std gnu could be used)
-dnl with extended modes being tried first.
-[[-std=gnu++98 -std=c++98 -qlanglvl=extended -AA]], [$1], [$2])[]dnl
-])# _AC_PROG_CXX_CXX98
-
-# _AC_PROG_CXX_CXX11 ([ACTION-IF-AVAILABLE], [ACTION-IF-UNAVAILABLE])
-# -------------------------------------------------------------------
-# If the C++ compiler is not in ISO CXX11 mode by default, try to add
-# an option to output variable CXX to make it so.  This macro tries
-# various options that select ISO C++11 on some system or another.  It
-# considers the compiler to be in ISO C++11 mode if it handles all the
-# tests from the C++98 checks, plus the following: Language features
-# (auto, constexpr, decltype, default/deleted constructors, delegate
-# constructors, final, initializer lists, lambda functions, nullptr,
-# override, range-based for loops, template brackets without spaces,
-# unicode literals) and library features (array, memory (shared_ptr,
-# weak_ptr), regex and tuple types).
-AC_DEFUN([_AC_PROG_CXX_CXX11],
-[_AC_CXX_STD_TRY([cxx11],
-[_AC_CXX_CXX11_TEST_HEADER
-_AC_CXX_CXX98_TEST_HEADER],
-[_AC_CXX_CXX11_TEST_BODY
-_AC_CXX_CXX98_TEST_BODY],
-dnl Try
-dnl GCC		-std=gnu++11 (unused restrictive mode: -std=c++11) [and 0x variants]
-dnl IBM XL C	-qlanglvl=extended0x
-dnl		(pre-V12.1; unused restrictive mode: -qlanglvl=stdcxx11)
-dnl HP aC++	-AA
-dnl Intel ICC	-std=c++11 -std=c++0x
-dnl Solaris	N/A (no support)
-dnl Tru64	N/A (no support)
-dnl with extended modes being tried first.
-[[-std=gnu++11 -std=c++11 -std=gnu++0x -std=c++0x -qlanglvl=extended0x -AA]], [$1], [$2])[]dnl
-])# _AC_PROG_CXX_CXX11

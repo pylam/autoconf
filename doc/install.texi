@@ -5,7 +5,7 @@
 
 @unnumbered Installation Instructions
 
-Copyright @copyright{} 1994-1996, 1999-2002, 2004-2017 Free Software
+Copyright @copyright{} 1994-1996, 1999-2002, 2004-2012 Free Software
 Foundation, Inc.
 
 Copying and distribution of this file, with or without modification, are
@@ -18,8 +18,7 @@ warranty of any kind.
 @node Basic Installation
 @section Basic Installation
 
-Briefly, the shell command
-@samp{./configure@tie{}&& make@tie{}&& make@tie{}install}
+Briefly, the shell commands @samp{./configure; make; make install}
 should configure, build, and install this package.  The following
 more-detailed instructions are generic; see the @file{README} file for
 instructions specific to this package.
@@ -262,7 +261,7 @@ use an ANSI C compiler:
 @noindent
 and if that doesn't work, install pre-built binaries of GCC for HP-UX.
 
-HP-UX @command{make} updates targets which have the same timestamps as
+HP-UX @command{make} updates targets which have the same time stamps as
 their prerequisites, which makes it generally unusable when shipped
 generated files such as @command{configure} are involved.  Use GNU
 @command{make} instead.

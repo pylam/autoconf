@@ -1,6 +1,6 @@
 # Definition of Autom4te option sets.                     -*- Makefile -*-
 #
-# Copyright (C) 2001-2017 Free Software Foundation, Inc.
+# Copyright (C) 2001-2012 Free Software Foundation, Inc.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ## -------------------------- ##
 ## Autoheader preselections.  ##
@@ -42,7 +42,6 @@ args: --preselect AC_CONFIG_FILES
 args: --preselect AC_CONFIG_HEADERS
 args: --preselect AC_CONFIG_LIBOBJ_DIR
 args: --preselect AC_CONFIG_LINKS
-args: --preselect AC_CONFIG_MACRO_DIR_TRACE
 args: --preselect AC_FC_FREEFORM
 args: --preselect AC_FC_SRCEXT
 args: --preselect AC_FC_PP_DEFINE
@@ -56,7 +55,6 @@ args: --preselect AC_SUBST_TRACE
 args: --preselect AM_AUTOMAKE_VERSION
 args: --preselect AM_CONDITIONAL
 args: --preselect AM_ENABLE_MULTILIB
-args: --preselect AM_EXTRA_RECURSIVE_TARGETS
 args: --preselect AM_GNU_GETTEXT
 args: --preselect AM_GNU_GETTEXT_INTL_SUBDIR
 args: --preselect AM_INIT_AUTOMAKE
@@ -71,8 +69,6 @@ args: --preselect AM_PROG_CXX_C_O
 args: --preselect AM_PROG_F77_C_O
 args: --preselect AM_PROG_FC_C_O
 args: --preselect AM_PROG_MOC
-# AM_PROG_MKDIR_P will be removed in Automake 1.14.
-args: --preselect AM_PROG_MKDIR_P
 args: --preselect AM_SILENT_RULES
 args: --preselect AM_XGETTEXT_OPTION
 args: --preselect _AM_MAKEFILE_INCLUDE
@@ -94,7 +90,6 @@ end-language: "Automake-preselections"
 begin-language: "Autoreconf-preselections"
 args: --preselect AC_CONFIG_AUX_DIR
 args: --preselect AC_CONFIG_HEADERS
-args: --preselect AC_CONFIG_MACRO_DIR_TRACE
 args: --preselect AC_CONFIG_SUBDIRS
 args: --preselect AC_INIT
 args: --preselect AC_PROG_LIBTOOL

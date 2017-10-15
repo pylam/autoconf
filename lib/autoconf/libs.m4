@@ -1,6 +1,6 @@
 # This file is part of Autoconf.                       -*- Autoconf -*-
 # Checking for libraries.
-# Copyright (C) 1992-1996, 1998-2006, 2008-2017 Free Software
+# Copyright (C) 1992-1996, 1998-2006, 2008-2012 Free Software
 # Foundation, Inc.
 
 # This file is part of Autoconf.  This program is free
@@ -21,7 +21,7 @@
 # You should have received a copy of the GNU General Public License
 # and a copy of the Autoconf Configure Script Exception along with
 # this program; see the files COPYINGv3 and COPYING.EXCEPTION
-# respectively.  If not, see <https://www.gnu.org/licenses/>.
+# respectively.  If not, see <http://www.gnu.org/licenses/>.
 
 # Written by David MacKenzie, with help from
 # Franc,ois Pinard, Karl Berry, Richard Pixley, Ian Lance Taylor,
@@ -49,8 +49,7 @@ AC_DEFUN([AC_SEARCH_LIBS],
 AC_CACHE_CHECK([for library containing $1], [ac_Search],
 [ac_func_search_save_LIBS=$LIBS
 AC_LANG_CONFTEST([AC_LANG_CALL([], [$1])])
-for ac_lib in '' $2
-do
+for ac_lib in '' $2; do
   if test -z "$ac_lib"; then
     ac_res="none required"
   else
@@ -237,8 +236,6 @@ ac_x_header_dirs='
 /usr/local/include/X11R6
 /usr/local/include/X11R5
 /usr/local/include/X11R4
-
-/opt/X11/include
 
 /usr/X386/include
 /usr/x386/include

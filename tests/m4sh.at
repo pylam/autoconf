@@ -2,7 +2,7 @@
 
 AT_BANNER([M4sh.])
 
-# Copyright (C) 2000-2017 Free Software Foundation, Inc.
+# Copyright (C) 2000-2012 Free Software Foundation, Inc.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@ AT_BANNER([M4sh.])
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ## --------------------------- ##
 ## Re-exec with CONFIG_SHELL.  ##
@@ -214,7 +214,7 @@ AT_KEYWORDS([m4sh])
 # unsetting LINENO to compare its result when (i) LINENO is supported
 # and when (ii) it is not.
 # So just skip if the shell is ZSH.
-AT_CHECK([test ${ZSH_VERSION+y} && exit 77], ignore)
+AT_CHECK([test -n "${ZSH_VERSION+set}" && exit 77], ignore)
 
 # AT_DATA_LINENO(FILE-NAME,
 #                UNSET-LINENO = true | false, COUNTER, COUNTER-RE)
@@ -297,7 +297,7 @@ test $as_lineno = 9999 || AS_ERROR([bad as_lineno at depth 2])
 AS_LINENO_POP
 test $as_lineno = 9999 || AS_ERROR([bad as_lineno at depth 1])
 AS_LINENO_POP
-test ${as_lineno+y} && AS_ERROR([as_lineno set at depth 0])
+test x${as_lineno+set} = xset && AS_ERROR([as_lineno set at depth 0])
 
 AS_EXIT([0])
 ]])
@@ -764,7 +764,7 @@ AT_CLEANUP
 ## Negated classes in globbing.  ##
 ## ----------------------------- ##
 
-# According to https://www.in-ulm.de/~mascheck/bourne/, all shells with
+# According to http://www.in-ulm.de/~mascheck/bourne/, all shells with
 # functions also support `[!...]'.  But `[^...]' is not universally supported.
 
 AT_SETUP([Negated classes in globbing])
@@ -792,7 +792,7 @@ AT_CLEANUP
 ## Null variable substitution.  ##
 ## ---------------------------- ##
 
-# According to https://www.in-ulm.de/~mascheck/bourne/, all shells with
+# According to http://www.in-ulm.de/~mascheck/bourne/, all shells with
 # functions also support `${a:-b}'.
 
 AT_SETUP([Null variable substitution])
@@ -1244,9 +1244,6 @@ AS_IF([false], [:], [ ]) && AS_CASE([foo], [foo], []
 ) && echo seventeen
 m4_define([empty])AS_IF([:], [empty]
 ) && AS_CASE([foo], [foo], [empty]) && echo eighteen
-dnl Allow for users that don't know to avoid trailing whitespace
-AS_IF([:
-], [echo nineteen])
 dnl We can't handle AS_IF([false], [:], [empty]) unless m4_expand is
 dnl taught how to handle m4_require.  The user is responsible for
 dnl avoiding the syntax error in that case.
@@ -1304,7 +1301,6 @@ fifteen
 sixteen
 seventeen
 eighteen
-nineteen
 foo1=1 bar1=1
 foo2=2 bar2=
 foo3=3 bar3=

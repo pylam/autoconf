@@ -1,7 +1,7 @@
 # This file is part of Autoconf.			-*- Autoconf -*-
 # Macros that test for specific, unclassified, features.
 #
-# Copyright (C) 1992-1996, 1998-2017 Free Software Foundation, Inc.
+# Copyright (C) 1992-1996, 1998-2012 Free Software Foundation, Inc.
 
 # This file is part of Autoconf.  This program is free
 # software; you can redistribute it and/or modify it under the
@@ -21,7 +21,7 @@
 # You should have received a copy of the GNU General Public License
 # and a copy of the Autoconf Configure Script Exception along with
 # this program; see the files COPYINGv3 and COPYING.EXCEPTION
-# respectively.  If not, see <https://www.gnu.org/licenses/>.
+# respectively.  If not, see <http://www.gnu.org/licenses/>.
 
 # Written by David MacKenzie, with help from
 # Franc,ois Pinard, Karl Berry, Richard Pixley, Ian Lance Taylor,
@@ -130,7 +130,7 @@ rm -rf conftest*[]dnl
 # By default, many hosts won't let programs access large files;
 # one must use special compiler options to get large-file access to work.
 # For more details about this brain damage please see:
-# http://www.unix.org/version2/whatsnew/lfs20mar.html
+# http://www.unix-systems.org/version2/whatsnew/lfs20mar.html
 AC_DEFUN([AC_SYS_LARGEFILE],
 [AC_ARG_ENABLE(largefile,
 	       [  --disable-largefile     omit support for large files])
@@ -168,8 +168,11 @@ if test "$enable_largefile" != no; then
       [_AC_SYS_LARGEFILE_TEST_INCLUDES])
   fi
 
-  AC_DEFINE([_DARWIN_USE_64_BIT_INODE], [1],
-    [Enable large inode numbers on Mac OS X 10.5.])
+  AH_VERBATIM([_DARWIN_USE_64_BIT_INODE],
+[/* Enable large inode numbers on Mac OS X 10.5.  */
+#ifndef _DARWIN_USE_64_BIT_INODE
+# define _DARWIN_USE_64_BIT_INODE 1
+#endif])
 fi
 ])# AC_SYS_LARGEFILE
 
@@ -254,7 +257,7 @@ void ucatch (dummy) int dummy; { }
 #endif
 
 int
-main (void)
+main ()
 {
   int i = fork (), status;
 
@@ -369,15 +372,13 @@ AC_BEFORE([$0], [AC_RUN_IFELSE])dnl
   AC_CHECK_HEADER([minix/config.h], [MINIX=yes], [MINIX=])
   if test "$MINIX" = yes; then
     AC_DEFINE([_POSIX_SOURCE], [1],
-      [Define to 1 if you need to in order for 'stat' and other
+      [Define to 1 if you need to in order for `stat' and other
        things to work.])
     AC_DEFINE([_POSIX_1_SOURCE], [2],
       [Define to 2 if the system does not provide POSIX.1 features
        except with this defined.])
     AC_DEFINE([_MINIX], [1],
       [Define to 1 if on MINIX.])
-    AC_DEFINE([_NETBSD_SOURCE], [1],
-      [Define to 1 to make NetBSD features available.  MINIX 3 needs this.])
   fi
 
 dnl Use a different key than __EXTENSIONS__, as that name broke existing
@@ -387,10 +388,6 @@ dnl configure.ac when using autoheader 2.62.
 #ifndef _ALL_SOURCE
 # undef _ALL_SOURCE
 #endif
-/* Enable general extensions on macOS.  */
-#ifndef _DARWIN_C_SOURCE
-# undef _DARWIN_C_SOURCE
-#endif
 /* Enable GNU extensions on systems that have them.  */
 #ifndef _GNU_SOURCE
 # undef _GNU_SOURCE
@@ -399,43 +396,9 @@ dnl configure.ac when using autoheader 2.62.
 #ifndef _POSIX_PTHREAD_SEMANTICS
 # undef _POSIX_PTHREAD_SEMANTICS
 #endif
-/* Enable extensions specified by ISO/IEC TS 18661-5:2014.  */
-#ifndef __STDC_WANT_IEC_60559_ATTRIBS_EXT__
-# undef __STDC_WANT_IEC_60559_ATTRIBS_EXT__
-#endif
-/* Enable extensions specified by ISO/IEC TS 18661-1:2014.  */
-#ifndef __STDC_WANT_IEC_60559_BFP_EXT__
-# undef __STDC_WANT_IEC_60559_BFP_EXT__
-#endif
-/* Enable extensions specified by ISO/IEC TS 18661-2:2015.  */
-#ifndef __STDC_WANT_IEC_60559_DFP_EXT__
-# undef __STDC_WANT_IEC_60559_DFP_EXT__
-#endif
-/* Enable extensions specified by ISO/IEC TS 18661-4:2015.  */
-#ifndef __STDC_WANT_IEC_60559_FUNCS_EXT__
-# undef __STDC_WANT_IEC_60559_FUNCS_EXT__
-#endif
-/* Enable extensions specified by ISO/IEC TS 18661-3:2015.  */
-#ifndef __STDC_WANT_IEC_60559_TYPES_EXT__
-# undef __STDC_WANT_IEC_60559_TYPES_EXT__
-#endif
-/* Enable extensions specified by ISO/IEC TR 24731-2:2010.  */
-#ifndef __STDC_WANT_LIB_EXT2__
-# undef __STDC_WANT_LIB_EXT2__
-#endif
-/* Enable extensions specified by ISO/IEC 24747:2009.  */
-#ifndef __STDC_WANT_MATH_SPEC_FUNCS__
-# undef __STDC_WANT_MATH_SPEC_FUNCS__
-#endif
 /* Enable extensions on HP NonStop.  */
 #ifndef _TANDEM_SOURCE
 # undef _TANDEM_SOURCE
-#endif
-/* Enable X/Open extensions if necessary.  HP-UX 11.11 defines
-   mbstate_t only if _XOPEN_SOURCE is defined to 500, regardless of
-   whether compiling with -Ae or -D_HPUX_SOURCE=1.  */
-#ifndef _XOPEN_SOURCE
-# undef _XOPEN_SOURCE
 #endif
 /* Enable general extensions on Solaris.  */
 #ifndef __EXTENSIONS__
@@ -453,33 +416,9 @@ dnl configure.ac when using autoheader 2.62.
   test $ac_cv_safe_to_define___extensions__ = yes &&
     AC_DEFINE([__EXTENSIONS__])
   AC_DEFINE([_ALL_SOURCE])
-  AC_DEFINE([_DARWIN_C_SOURCE])
   AC_DEFINE([_GNU_SOURCE])
   AC_DEFINE([_POSIX_PTHREAD_SEMANTICS])
-  AC_DEFINE([__STDC_WANT_IEC_60559_ATTRIBS_EXT__])
-  AC_DEFINE([__STDC_WANT_IEC_60559_BFP_EXT__])
-  AC_DEFINE([__STDC_WANT_IEC_60559_DFP_EXT__])
-  AC_DEFINE([__STDC_WANT_IEC_60559_FUNCS_EXT__])
-  AC_DEFINE([__STDC_WANT_IEC_60559_TYPES_EXT__])
-  AC_DEFINE([__STDC_WANT_LIB_EXT2__])
-  AC_DEFINE([__STDC_WANT_MATH_SPEC_FUNCS__])
   AC_DEFINE([_TANDEM_SOURCE])
-  AC_CACHE_CHECK([whether _XOPEN_SOURCE should be defined],
-    [ac_cv_should_define__xopen_source],
-    [ac_cv_should_define__xopen_source=no
-     AC_COMPILE_IFELSE(
-       [AC_LANG_PROGRAM([[
-          #include <wchar.h>
-          mbstate_t x;]])],
-       [],
-       [AC_COMPILE_IFELSE(
-          [AC_LANG_PROGRAM([[
-             #define _XOPEN_SOURCE 500
-             #include <wchar.h>
-             mbstate_t x;]])],
-          [ac_cv_should_define__xopen_source=yes])])])
-  test $ac_cv_should_define__xopen_source = yes &&
-    AC_DEFINE([_XOPEN_SOURCE], [500])
 ])# AC_USE_SYSTEM_EXTENSIONS
 
 

@@ -2,7 +2,7 @@
 
 AT_BANNER([C low level compiling/preprocessing macros.])
 
-# Copyright (C) 2000-2006, 2008-2017 Free Software Foundation, Inc.
+# Copyright (C) 2000-2006, 2008-2012 Free Software Foundation, Inc.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@ AT_BANNER([C low level compiling/preprocessing macros.])
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 # Since the macros which compile are required by most tests, check
@@ -123,12 +123,8 @@ test "x$ac_c_preproc_warn_flag" = xyes &&
 CPP="./mycpp $CPP"
 
 # Exercise CPP.
+AC_CHECK_HEADERS(stdio.h autoconf_io.h, [], [], [-])]])
 
-AC_PREPROC_IFELSE([AC_LANG_SOURCE([[#include <stdio.h>]])],
-  [AC_DEFINE([HAVE_STDIO_H], [1], [Define if you have stdio.h])])
-AC_PREPROC_IFELSE([AC_LANG_SOURCE([[#include <autoconf_io.h>]])],
-  [AC_DEFINE([HAVE_AUTOCONF_IO_H], [1], [Define if you have autoconf_io.h])])
-]])
 AT_CHECK_DEFINES(
 [/* #undef HAVE_AUTOCONF_IO_H */
 #define HAVE_STDIO_H 1
@@ -143,14 +139,14 @@ AT_CLEANUP
 
 AT_SETUP([AC_PROG_CPP without warnings])
 
-# Ignore if the cpp in $PATH doesn't work
-AT_CHECK([[echo '#include <stdio.h>' | cpp || exit 77]],
+# Ignore if /lib/cpp doesn't work
+AT_CHECK([[echo '#include <stdio.h>' | /lib/cpp || exit 77]],
   [], [ignore], [ignore])
 
 # A cpp which exit status is meaningless.
 AT_DATA([mycpp],
 [[#! /bin/sh
-cpp "$@"
+/lib/cpp "$@"
 exit 0
 ]])
 
@@ -163,11 +159,7 @@ test "x$ac_c_preproc_warn_flag" != xyes &&
   AC_MSG_ERROR([failed to detect preprocessor warning option])
 
 # Exercise CPP.
-AC_PREPROC_IFELSE([AC_LANG_SOURCE([[#include <stdio.h>]])],
-  [AC_DEFINE([HAVE_STDIO_H], [1], [Define if you have stdio.h])])
-AC_PREPROC_IFELSE([AC_LANG_SOURCE([[#include <autoconf_io.h>]])],
-  [AC_DEFINE([HAVE_AUTOCONF_IO_H], [1], [Define if you have autoconf_io.h])])
-]])
+AC_CHECK_HEADERS(stdio.h autoconf_io.h, [], [], [-])]])
 
 AT_CHECK_DEFINES(
 [/* #undef HAVE_AUTOCONF_IO_H */
@@ -187,8 +179,8 @@ AT_CLEANUP
 
 AT_SETUP([AC_PROG_CPP via CC])
 
-# Ignore if the cpp in $PATH doesn't work
-AT_CHECK([[echo '#include <stdio.h>' | cpp || exit 77]],
+# Ignore if /lib/cpp doesn't work
+AT_CHECK([[echo '#include <stdio.h>' | /lib/cpp || exit 77]],
   [], [ignore], [ignore])
 
 AT_DATA([mycc],
@@ -212,11 +204,7 @@ test "$CPP" != "$CC -E" &&
   AC_MSG_ERROR([error messages on stderr cause the preprocessor selection to fail])
 
 # Exercise CPP.
-AC_PREPROC_IFELSE([AC_LANG_SOURCE([[#include <stdio.h>]])],
-  [AC_DEFINE([HAVE_STDIO_H], [1], [Define if you have stdio.h])])
-AC_PREPROC_IFELSE([AC_LANG_SOURCE([[#include <autoconf_io.h>]])],
-  [AC_DEFINE([HAVE_AUTOCONF_IO_H], [1], [Define if you have autoconf_io.h])])
-]])
+AC_CHECK_HEADERS(stdio.h autoconf_io.h, [], [], [-])]])
 
 AT_CHECK_DEFINES(
 [/* #undef HAVE_AUTOCONF_IO_H */
@@ -366,7 +354,7 @@ AT_DATA([foo.c],
 #endif
 #include <stdio.h>
 
-int main (void)
+int main ()
 {
 #ifdef _OPENMP
 #pragma omp parallel
@@ -416,7 +404,7 @@ foo.@OBJEXT@: foo.cpp
 ]])
 
 AT_DATA([foo.cpp],
-[[int main (void)
+[[int main ()
 {
   return 0;
 }

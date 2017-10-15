@@ -2,7 +2,7 @@
 
 AT_BANNER([Autotest.])
 
-# Copyright (C) 2004-2017 Free Software Foundation, Inc.
+# Copyright (C) 2004-2012 Free Software Foundation, Inc.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@ AT_BANNER([Autotest.])
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 # AT_DATA_AUTOTEST(FILE-NAME, CONTENTS)
@@ -173,25 +173,6 @@ file=file2
 AT_DATA([$file], [[$file
 ]])
 AT_CHECK([echo '$file' > file3])
-AT_CHECK([cmp file2 file3])
-])
-
-
-## ------------------ ##
-## AT_DATA_UNQUOTED.  ##
-## ------------------ ##
-
-AT_CHECK_AT_TEST([AT@&t@_DATA_UNQUOTED], [
-AT_CHECK([test -f file1], [1])
-AT_DATA([file1])
-AT_CHECK([test -f file1 && test ! -s file1])
-AT_CHECK([echo hi > file1])
-AT_DATA([file1], [[]])
-AT_CHECK([test -f file1 && test ! -s file1])
-file=file2
-AT_DATA_UNQUOTED([$file], [[$file
-]])
-AT_CHECK([echo file2 > file3])
 AT_CHECK([cmp file2 file3])
 ])
 
@@ -397,7 +378,7 @@ AT_CHECK_AT_TEST([Syntax error],
    AT_CHECK([${CONFIG_SHELL-$SHELL} -c 'case `. ./syntax; echo $?` in
 		  0|"") exit 77;;
 		esac'], [0], [ignore], [ignore])
-   AT_CHECK([${CONFIG_SHELL-$SHELL} ./micro-suite], [1], [ignore], [stderr])
+   AT_CHECK([$CONFIG_SHELL ./micro-suite], [1], [ignore], [stderr])
    AT_CHECK([grep "unable to parse test group: 2" stderr], [0], [ignore])],
   [1 3])
 
@@ -1507,7 +1488,7 @@ AT_CHECK_AT_TEST([parallel syntax error],
    AT_CHECK([${CONFIG_SHELL-$SHELL} -c 'case `. ./syntax; echo $?` in
 		  0|"") exit 77;;
 		esac'], [0], [ignore], [ignore])
-   AT_CHECK([${CONFIG_SHELL-$SHELL} ./micro-suite -j], [1], [ignore], [stderr])
+   AT_CHECK([$CONFIG_SHELL ./micro-suite -j], [1], [ignore], [stderr])
    AT_CHECK([grep "unable to parse test group: 2" stderr], [0], [ignore])],
   [-j2 1 3])
 
@@ -1758,7 +1739,6 @@ printf %s\\n "$std"
 ## ------------------- ##
 
 AT_SETUP([srcdir propagation])
-AT_KEYWORDS([AC_@&t@CONFIG_TESTDIR])
 
 mkdir pkg vpath-outside vpath-abs
 mkdir pkg/t pkg/vpath-inside
@@ -1886,129 +1866,12 @@ AT_CHECK([grep 'two spaces' suite.log], [1])
 AT_CLEANUP
 
 
-## --------------- ##
-## C executables.  ##
-## --------------- ##
-
-AT_SETUP([C unit tests])
-AT_KEYWORDS([AC_@&t@CONFIG_TESTDIR])
-AT_KEYWORDS([AT_@&t@TESTED])
-
-mkdir t
-AT_DATA([configure.ac], [[AC_INIT
-AC_PROG_CC
-AC_CONFIG_TESTDIR([t], [.])
-AC_CONFIG_FILES([Makefile])
-AC_OUTPUT
-]])
-
-# Test file
-AT_DATA([testprog.c],
-[[int main(int argc) { return argc == 2 ? 0 : 1; }
-]])
-
-# Testsuite
-AT_DATA([Makefile.in],
-[[CC=@CC@
-CFLAGS=@CFLAGS@
-
-testprog@EXEEXT@: testprog.o
-testprog.o: testprog.c
-.SUFFIXES: .c .o @EXEEXT@
-
-.c.o:
-	$(CC) -c $<
-.o@EXEEXT@:
-	$(CC) -o $@ $^
-]])
-
-AT_CHECK_AT_PREP([suite],
-[[AT_INIT([suite to check C programs])
-AT_TESTED([testprog$EXEEXT])
-AT_SETUP([my only test])
-AT_CHECK([testprog$EXEEXT foo], [0])
-AT_CHECK([testprog$EXEEXT], [1])
-AT_CLEANUP
-]], [], [], [], [t])
-
-rm t/atconfig
-AT_CHECK_AUTOCONF
-AT_CHECK_CONFIGURE
-AT_CHECK([grep '^EXEEXT='\''.*'\' t/atconfig], [], [ignore])
-AT_CHECK([make], [], [ignore])
-AT_CHECK([cd t && $CONFIG_SHELL ./suite], [], [ignore])
-AT_CHECK([grep 1.*successful t/suite.log], [], [ignore])
-AT_CLEANUP
-
-
-## -------------------------------------- ##
-## C executables (force .exe extension).  ##
-## -------------------------------------- ##
-
-AT_SETUP([C unit tests (EXEEXT)])
-AT_KEYWORDS([AC_@&t@CONFIG_TESTDIR])
-AT_KEYWORDS([AT_@&t@TESTED])
-
-mkdir t
-AT_DATA([configure.ac], [[AC_INIT
-AC_PROG_CC
-case $ac_cv_exeext in
-  '' | .exe) ;;
-  *) exit 77 ;;
-esac
-ac_cv_exeext=.exe
-AC_SUBST([EXEEXT], [$ac_cv_exeext])
-AC_CONFIG_TESTDIR([t], [.])
-AC_CONFIG_FILES([Makefile])
-AC_OUTPUT
-]])
-
-# Test file
-AT_DATA([testprog.c],
-[[int main(int argc) { return argc == 2 ? 0 : 1; }
-]])
-
-# Testsuite
-AT_DATA([Makefile.in],
-[[CC=@CC@
-CFLAGS=@CFLAGS@
-
-testprog@EXEEXT@: testprog.o
-testprog.o: testprog.c
-.SUFFIXES: .c .o @EXEEXT@
-
-.c.o:
-	$(CC) -c $<
-.o@EXEEXT@:
-	$(CC) -o $@ $^
-]])
-
-AT_CHECK_AT_PREP([suite],
-[[AT_INIT([suite to check C programs])
-AT_TESTED([testprog$EXEEXT])
-AT_SETUP([my only test])
-AT_CHECK([testprog$EXEEXT foo], [0])
-AT_CHECK([testprog$EXEEXT], [1])
-AT_CLEANUP
-]], [], [], [], [t])
-
-rm t/atconfig
-AT_CHECK_AUTOCONF
-AT_CHECK_CONFIGURE
-AT_CHECK([grep '^EXEEXT='\''.*'\' t/atconfig], [], [ignore])
-AT_CHECK([make], [], [ignore])
-AT_CHECK([cd t && $CONFIG_SHELL ./suite], [], [ignore])
-AT_CHECK([grep 1.*successful t/suite.log], [], [ignore])
-AT_CLEANUP
-
-
 ## ------------------------- ##
 ## Erlang EUnit unit tests.  ##
 ## ------------------------- ##
 
 AT_SETUP([Erlang Eunit unit tests])
 AT_KEYWORDS([Erlang])
-AT_KEYWORDS([AC_@&t@CONFIG_TESTDIR])
 
 mkdir s t
 AT_DATA([configure.ac], [[AC_INIT
