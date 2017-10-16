@@ -3,6 +3,6 @@
 . ../PREFIX
 
 ./myclean.sh
-./configure --prefix=$MYPREFIX && \
+./configure --prefix=$MYAUTOTOOLS && \
 make && \
 make install
