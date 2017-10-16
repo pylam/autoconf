@@ -3,6 +3,6 @@
 . ../PREFIX
 
 ./myclean.sh
-./configure --prefix=$MYPREFIX
-make
+./configure --prefix=$MYPREFIX && \
+make && \
 make install
